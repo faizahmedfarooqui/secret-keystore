@@ -1,0 +1,61 @@
+{
+    "name": "@faizahmedfarooqui/secret-keystore",
+    "version": "1.0.0",
+    "description": "Secure secrets management with AWS KMS encryption, in-memory keystore, and Nitro Enclave attestation support",
+    "main": "src/index.js",
+    "types": "src/index.d.ts",
+    "bin": {
+        "secret-keystore": "./bin/cli.js"
+    },
+    "engines": {
+        "node": ">=18.0.0"
+    },
+    "files": [
+        "src/**/*.js",
+        "src/**/*.d.ts",
+        "bin/**/*.js",
+        "README.md",
+        "SECURITY.md",
+        "LICENSE"
+    ],
+    "dependencies": {
+        "@aws-sdk/client-kms": "^3.400.0",
+        "asn1js": "^3.0.5",
+        "pkijs": "^3.2.4",
+        "pvtsutils": "^1.3.5"
+    },
+    "peerDependencies": {
+        "@aws-sdk/client-kms": "^3.x",
+        "js-yaml": "^4.x"
+    },
+    "peerDependenciesMeta": {
+        "js-yaml": {
+            "optional": true
+        }
+    },
+    "scripts": {
+        "test": "echo \"Error: no test specified\" && exit 1",
+        "pack:local": "npm pack"
+    },
+    "keywords": [
+        "kms",
+        "secrets",
+        "keystore",
+        "aws",
+        "encryption",
+        "decryption",
+        "dotenv",
+        "nitro",
+        "attestation"
+    ],
+    "author": "Faiz Ahmed Farooqui",
+    "license": "MIT",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/faizahmedfarooqui/secret-keystore.git"
+    },
+    "homepage": "https://github.com/faizahmedfarooqui/secret-keystore#readme",
+    "bugs": {
+        "url": "https://github.com/faizahmedfarooqui/secret-keystore/issues"
+    }
+}
