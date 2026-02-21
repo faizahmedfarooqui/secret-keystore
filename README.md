@@ -2,6 +2,8 @@
 
 A secure secrets management library for Node.js applications using AWS KMS encryption.
 
+**Available on npm:** [`@faizahmedfarooqui/secret-keystore`](https://www.npmjs.com/package/@faizahmedfarooqui/secret-keystore)
+
 ## Table of Contents
 
 - [Features](#features)
@@ -158,6 +160,8 @@ export default async function DashboardPage() {
 
 ### From npm Registry
 
+The package is published to the public npm registry. Install with:
+
 ```bash
 npm install @faizahmedfarooqui/secret-keystore
 ```
@@ -174,7 +178,7 @@ When working with local development or Docker builds where `file:` references do
 # From the secret-keystore directory
 npm pack
 
-# This creates: secret-keystore-1.0.0.tgz
+# This creates: faizahmedfarooqui-secret-keystore-1.0.0.tgz (scoped package name)
 ```
 
 Or use the provided npm script:
@@ -190,10 +194,10 @@ In your consumer project:
 
 ```bash
 # Copy the tarball to your project
-cp ../secret-keystore/secret-keystore-1.0.0.tgz ./
+cp ../secret-keystore/faizahmedfarooqui-secret-keystore-1.0.0.tgz ./
 
 # Install from tarball
-npm install ./secret-keystore-1.0.0.tgz
+npm install ./faizahmedfarooqui-secret-keystore-1.0.0.tgz
 ```
 
 Or add a script to your consumer's `package.json`:
@@ -202,7 +206,7 @@ Or add a script to your consumer's `package.json`:
 {
   "scripts": {
     "pack:keystore": "cd ../secret-keystore && npm pack --pack-destination ../your-project",
-    "install:keystore": "npm run pack:keystore && npm install ./secret-keystore-*.tgz"
+    "install:keystore": "npm run pack:keystore && npm install ./faizahmedfarooqui-secret-keystore-*.tgz"
   }
 }
 ```
@@ -214,7 +218,7 @@ After installing, your `package.json` will reference the local tarball:
 ```json
 {
   "dependencies": {
-    "@faizahmedfarooqui/secret-keystore": "file:./secret-keystore-1.0.0.tgz"
+    "@faizahmedfarooqui/secret-keystore": "file:./faizahmedfarooqui-secret-keystore-1.0.0.tgz"
   }
 }
 ```
@@ -232,7 +236,7 @@ WORKDIR /app
 COPY package.json yarn.lock ./
 
 # Copy the local tarball (must be in the Docker build context)
-COPY secret-keystore-1.0.0.tgz ./
+COPY faizahmedfarooqui-secret-keystore-1.0.0.tgz ./
 
 # Install dependencies (tarball is referenced in package.json)
 RUN yarn install --frozen-lockfile
@@ -246,18 +250,18 @@ RUN yarn install --frozen-lockfile
 # 1. In the keystore library directory
 cd secret-keystore
 npm pack
-mv secret-keystore-1.0.0.tgz ../your-consumer-project/
+mv faizahmedfarooqui-secret-keystore-*.tgz ../your-consumer-project/
 
 # 2. In your consumer project
 cd ../your-consumer-project
 
 # Update package.json to reference the tarball
-# "dependencies": { "@faizahmedfarooqui/secret-keystore": "file:./secret-keystore-1.0.0.tgz" }
+# "dependencies": { "@faizahmedfarooqui/secret-keystore": "file:./faizahmedfarooqui-secret-keystore-1.0.0.tgz" }
 
 npm install
 
 # 3. Commit the tarball to your repo (for CI/CD)
-git add secret-keystore-1.0.0.tgz
+git add faizahmedfarooqui-secret-keystore-*.tgz
 git commit -m "Add @faizahmedfarooqui/secret-keystore tarball for Docker builds"
 ```
 

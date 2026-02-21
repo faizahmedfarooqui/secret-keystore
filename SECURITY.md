@@ -1,6 +1,6 @@
 # Security
 
-This document explains the security model of `@faizahmedfarooqui/secret-keystore` and how it protects your secrets.
+This document explains the security model of [`@faizahmedfarooqui/secret-keystore`](https://www.npmjs.com/package/@faizahmedfarooqui/secret-keystore) (available on npm) and how it protects your secrets.
 
 > **🔐 Key Design Decision:** This package uses **IAM roles by default**. Explicit AWS credentials require opt-in. This ensures production deployments are secure by default.
 
