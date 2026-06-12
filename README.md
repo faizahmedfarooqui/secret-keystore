@@ -210,7 +210,7 @@ npm pack
 # pnpm
 pnpm pack
 
-# This creates: faizahmedfarooqui-secret-keystore-1.0.0.tgz (scoped package name)
+# This creates: faizahmed-secret-keystore-1.1.1.tgz (scoped package name)
 ```
 
 Or use the provided script:
@@ -226,14 +226,14 @@ In your consumer project:
 
 ```bash
 # Copy the tarball to your project
-cp ../secret-keystore/faizahmedfarooqui-secret-keystore-1.0.0.tgz ./
+cp ../secret-keystore/faizahmed-secret-keystore-1.1.1.tgz ./
 
 # Install from tarball
 # npm
-npm install ./faizahmedfarooqui-secret-keystore-1.0.0.tgz
+npm install ./faizahmed-secret-keystore-1.1.1.tgz
 
 # pnpm
-pnpm add ./faizahmedfarooqui-secret-keystore-1.0.0.tgz
+pnpm add ./faizahmed-secret-keystore-1.1.1.tgz
 ```
 
 Or add a script to your consumer's `package.json`:
@@ -242,7 +242,7 @@ Or add a script to your consumer's `package.json`:
 {
   "scripts": {
     "pack:keystore": "cd ../secret-keystore && npm pack --pack-destination ../your-project",
-    "install:keystore": "npm run pack:keystore && npm install ./faizahmedfarooqui-secret-keystore-*.tgz"
+    "install:keystore": "npm run pack:keystore && npm install ./faizahmed-secret-keystore-*.tgz"
   }
 }
 ```
@@ -254,7 +254,7 @@ After installing, your `package.json` will reference the local tarball:
 ```json
 {
   "dependencies": {
-    "@faizahmed/secret-keystore": "file:./faizahmedfarooqui-secret-keystore-1.0.0.tgz"
+    "@faizahmed/secret-keystore": "file:./faizahmed-secret-keystore-1.1.1.tgz"
   }
 }
 ```
@@ -272,7 +272,7 @@ WORKDIR /app
 COPY package.json yarn.lock ./
 
 # Copy the local tarball (must be in the Docker build context)
-COPY faizahmedfarooqui-secret-keystore-1.0.0.tgz ./
+COPY faizahmed-secret-keystore-1.1.1.tgz ./
 
 # Install dependencies (tarball is referenced in package.json)
 RUN yarn install --frozen-lockfile
@@ -286,18 +286,18 @@ RUN yarn install --frozen-lockfile
 # 1. In the keystore library directory
 cd secret-keystore
 npm pack          # or: pnpm pack
-mv faizahmedfarooqui-secret-keystore-*.tgz ../your-consumer-project/
+mv faizahmed-secret-keystore-*.tgz ../your-consumer-project/
 
 # 2. In your consumer project
 cd ../your-consumer-project
 
 # Update package.json to reference the tarball
-# "dependencies": { "@faizahmed/secret-keystore": "file:./faizahmedfarooqui-secret-keystore-1.0.0.tgz" }
+# "dependencies": { "@faizahmed/secret-keystore": "file:./faizahmed-secret-keystore-1.1.1.tgz" }
 
 npm install       # or: pnpm install
 
 # 3. Commit the tarball to your repo (for CI/CD)
-git add faizahmedfarooqui-secret-keystore-*.tgz
+git add faizahmed-secret-keystore-*.tgz
 git commit -m "Add @faizahmed/secret-keystore tarball for Docker builds"
 ```
 
@@ -407,7 +407,7 @@ bootstrap();
 ## CLI Reference
 
 ```bash
-npx @faizahmed/secret-keystore <encrypt|decrypt> [options]
+npx @faizahmed/secret-keystore <command> [options]
 ```
 
 ### Commands

@@ -9,6 +9,7 @@ This document explains the security model of [`@faizahmed/secret-keystore`](http
 - [Overview](#overview)
 - [Threat Scenarios](#threat-scenarios)
 - [Security Layers](#security-layers)
+- [CLI Security Notes](#cli-security-notes)
 - [Security-First Dependency Policy](#security-first-dependency-policy)
 - [Nitro Enclave Attestation](#nitro-enclave-attestation)
   - [Full Attestation Flow](#full-attestation-flow)
@@ -79,7 +80,7 @@ Even with both:
 ```mermaid
 flowchart TB
     subgraph CONFIG["Config File"]
-        A["DB_PASSWORD=ENC[AQICAHh...encrypted...]"]
+        A["DB_PASSWORD=ENC#91;AQICAHh...encrypted...#93;"]
     end
 
     subgraph KMS["AWS KMS"]
@@ -121,6 +122,22 @@ flowchart TB
 - Additional AES-256-GCM encryption in keystore memory
 - Accessible only via `keyStore.get()` API
 - Secure memory wipe on `destroy()`
+
+The zero-config **`config()`** loader follows the same rule. It discovers and cascades your `.env` files (`.env` → `.env.local` → `.env.<NODE_ENV>` → `.env.<NODE_ENV>.local`), decrypts them via KMS, and loads everything into the in-memory keystore it returns. Nothing decrypted is written to disk, and nothing is placed in `process.env`.
+
+> **⚠️ `populateProcessEnv` is a deliberate footgun.** `config({ populateProcessEnv: true })` copies decrypted values into `process.env` for drop-in `dotenv` compatibility. This **re-introduces the bulk-exposure blast radius this library exists to remove** — a single `env` dump or `/proc/[pid]/environ` read would leak everything. It is **off by default**, emits a runtime warning when enabled, and should be avoided in production. Prefer reading from the returned keystore via `.get()`.
+
+## CLI Security Notes
+
+The CLI commands keep the same blast-radius discipline, with a couple of deliberate, time-boxed exceptions worth understanding:
+
+| Command | Security note |
+|---------|---------------|
+| `encrypt` / `decrypt` | `decrypt` writes plaintext to disk (in place or `--output`). To *run* an app, prefer `run` or `config()` so plaintext never lands on disk. |
+| `run` | Decrypts and launches your command with secrets in the **child process's** environment. The parent never holds them — but code inside the child can read them via `env`, which is unavoidable for any process runner. Use `config()` if you can modify the app and want secrets to stay out of `process.env` entirely. |
+| `edit` | Decrypts into a `0600`-permission temp file, opens `$EDITOR`, re-encrypts on save, then overwrites and deletes (shreds) the temp file. Plaintext exists on disk only while the editor is open. |
+| `rotate` | Re-encrypts already-encrypted values under a new KMS Key ID (decrypting with the old key in a single pass). Plaintext is only ever held in memory. Use it after suspected key exposure. |
+| `keys` / `status` | Read-only inspection. They print key names and encrypted/plaintext status only — **never secret values** — so they're safe to use in CI and logs. |
 
 ## Security-First Dependency Policy
 
@@ -468,6 +485,7 @@ const keyStore = await createSecretKeyStore(source, kmsKeyId, {
 | **Test Recovery** | Ensure you can recover if KMS access is lost |
 | **Document Key Policies** | Keep track of what each key policy allows |
 | **Rotate Secrets Regularly** | Re-encrypt with new values periodically |
+| **Rotate KMS Keys** | Use `rotate --old-kms-key-id=... --kms-key-id=...` to re-encrypt under a new key, especially after suspected exposure |
 
 ## Security Checklist
 
@@ -487,6 +505,7 @@ const keyStore = await createSecretKeyStore(source, kmsKeyId, {
 - [ ] Secure memory wipe enabled (default)
 - [ ] In-memory AES-256-GCM encryption enabled (default)
 - [ ] No secrets logged, even in debug mode
+- [ ] If using `config()`, `populateProcessEnv` left at its default (`false`) — secrets stay out of `process.env`
 
 ### Nitro Enclave Attestation (Maximum Security)
 
