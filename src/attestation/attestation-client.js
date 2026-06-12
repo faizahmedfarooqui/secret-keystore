@@ -52,33 +52,41 @@ async function fetchAttestationDocument(params, options = {}) {
     const client = url.protocol === 'https:' ? https : http;
 
     return new Promise((resolve, reject) => {
-        const req = client.get(url.toString(), {
-            timeout,
-            headers: {
-                'Accept': 'application/octet-stream'
-            }
-        }, (res) => {
-            const chunks = [];
-
-            res.on('data', (chunk) => chunks.push(chunk));
-
-            res.on('end', () => {
-                const buffer = Buffer.concat(chunks);
-
-                if (res.statusCode !== 200) {
-                    const errorMessage = buffer.toString('utf8');
-                    reject(new Error(`Attestation endpoint returned ${res.statusCode}: ${errorMessage}`));
-                    return;
+        const req = client.get(
+            url.toString(),
+            {
+                timeout,
+                headers: {
+                    Accept: 'application/octet-stream'
                 }
+            },
+            res => {
+                const chunks = [];
 
-                // The response is binary attestation document, convert to base64
-                const attestationDocument = buffer.toString('base64');
+                res.on('data', chunk => chunks.push(chunk));
 
-                resolve({ attestationDocument });
-            });
-        });
+                res.on('end', () => {
+                    const buffer = Buffer.concat(chunks);
 
-        req.on('error', (error) => {
+                    if (res.statusCode !== 200) {
+                        const errorMessage = buffer.toString('utf8');
+                        reject(
+                            new Error(
+                                `Attestation endpoint returned ${res.statusCode}: ${errorMessage}`
+                            )
+                        );
+                        return;
+                    }
+
+                    // The response is binary attestation document, convert to base64
+                    const attestationDocument = buffer.toString('base64');
+
+                    resolve({ attestationDocument });
+                });
+            }
+        );
+
+        req.on('error', error => {
             reject(new Error(`Attestation request failed: ${error.message}`));
         });
 
@@ -115,8 +123,8 @@ async function isAttestationAvailable(endpoint = DEFAULT_ATTESTATION_ENDPOINT, t
     const url = new URL(endpoint);
     const client = url.protocol === 'https:' ? https : http;
 
-    return new Promise((resolve) => {
-        const req = client.get(url.toString(), { timeout }, (res) => {
+    return new Promise(resolve => {
+        const req = client.get(url.toString(), { timeout }, res => {
             // Any response means the endpoint is available
             res.resume(); // Consume response data to free up memory
             resolve(true);
@@ -136,4 +144,3 @@ module.exports = {
     isAttestationAvailable,
     DEFAULT_ATTESTATION_ENDPOINT
 };
-

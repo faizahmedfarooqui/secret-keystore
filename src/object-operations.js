@@ -8,7 +8,12 @@
 const { encryptKMSValue, decryptKMSValue, isAlreadyEncrypted } = require('./kms');
 const { getAllPaths, filterPaths, getByPath, setByPath } = require('./path-matcher');
 const { validateKmsKeyId, buildEncryptOptions, buildDecryptOptions } = require('./options');
-const { EncryptionError, DecryptionError, ENCRYPTION_ERROR_CODES, DECRYPTION_ERROR_CODES } = require('./errors');
+const {
+    EncryptionError,
+    DecryptionError,
+    ENCRYPTION_ERROR_CODES,
+    DECRYPTION_ERROR_CODES
+} = require('./errors');
 
 // ═══════════════════════════════════════════════════════════════════════════
 // ENCRYPT OBJECT
@@ -52,7 +57,9 @@ async function encryptKMSObject(obj, kmsKeyId, options = {}) {
         exclude: options.exclude
     });
 
-    logger?.debug?.(`[encryptKMSObject] Selected ${selectedPaths.length} paths from ${allPaths.length} total`);
+    logger?.debug?.(
+        `[encryptKMSObject] Selected ${selectedPaths.length} paths from ${allPaths.length} total`
+    );
 
     const result = {
         object: resultObject,
@@ -109,7 +116,9 @@ async function encryptKMSObject(obj, kmsKeyId, options = {}) {
         }
     }
 
-    logger?.info?.(`[encryptKMSObject] Complete: ${result.encrypted.length} encrypted, ${result.skipped.length} skipped, ${result.failed.length} failed`);
+    logger?.info?.(
+        `[encryptKMSObject] Complete: ${result.encrypted.length} encrypted, ${result.skipped.length} skipped, ${result.failed.length} failed`
+    );
 
     return result;
 }
@@ -155,7 +164,9 @@ async function decryptKMSObject(obj, kmsKeyId, options = {}) {
         exclude: options.exclude
     });
 
-    logger?.debug?.(`[decryptKMSObject] Selected ${selectedPaths.length} paths from ${allPaths.length} total`);
+    logger?.debug?.(
+        `[decryptKMSObject] Selected ${selectedPaths.length} paths from ${allPaths.length} total`
+    );
 
     const result = {
         object: resultObject,
@@ -204,7 +215,9 @@ async function decryptKMSObject(obj, kmsKeyId, options = {}) {
         }
     }
 
-    logger?.info?.(`[decryptKMSObject] Complete: ${result.decrypted.length} decrypted, ${result.skipped.length} skipped, ${result.failed.length} failed`);
+    logger?.info?.(
+        `[decryptKMSObject] Complete: ${result.decrypted.length} decrypted, ${result.skipped.length} skipped, ${result.failed.length} failed`
+    );
 
     return result;
 }
@@ -217,4 +230,3 @@ module.exports = {
     encryptKMSObject,
     decryptKMSObject
 };
-

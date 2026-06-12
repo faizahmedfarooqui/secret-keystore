@@ -466,6 +466,10 @@ export const ATTESTATION_ERROR_CODES: {
     GETTER_FAILED: 'ATTESTATION_GETTER_FAILED';
     NOT_AVAILABLE: 'ATTESTATION_NOT_AVAILABLE';
     RETRY_FAILED: 'ATTESTATION_RETRY_FAILED';
+    INIT_FAILED: 'ATTESTATION_INIT_FAILED';
+    CMS_UNWRAP_FAILED: 'ATTESTATION_CMS_UNWRAP_FAILED';
+    KEYPAIR_GENERATION_FAILED: 'ATTESTATION_KEYPAIR_GENERATION_FAILED';
+    ENDPOINT_UNREACHABLE: 'ATTESTATION_ENDPOINT_UNREACHABLE';
 };
 
 export const CONTENT_ERROR_CODES: {
@@ -570,3 +574,68 @@ export function createSecretKeyStore(
     kmsKeyId: string,
     options?: KeystoreOptions
 ): Promise<SecretKeyStore>;
+
+// ═══════════════════════════════════════════════════════════════════════════
+// RUNTIME CONFIG LOADER
+// ═══════════════════════════════════════════════════════════════════════════
+
+export interface ConfigOptions extends KeystoreOptions {
+    /** REQUIRED KMS Key ID (explicit; no environment fallback). */
+    kmsKeyId: string;
+    /** Base directory for file discovery (default: process.cwd()). */
+    cwd?: string;
+    /** Explicit file path(s); when set, the cascade is skipped. */
+    path?: string | string[];
+    /** Environment name for the cascade (default: process.env.NODE_ENV). */
+    nodeEnv?: string;
+    /**
+     * Opt-in: also copy decrypted values into process.env (override).
+     * Discouraged — widens the RCE blast radius. Default: false.
+     */
+    populateProcessEnv?: boolean;
+    /** Target object for populateProcessEnv (default: process.env). */
+    processEnv?: Record<string, string | undefined>;
+}
+
+/**
+ * Discover and cascade .env files, decrypt their ENC[...] values via KMS, and
+ * load everything into an in-memory SecretKeyStore.
+ *
+ * Cascade order (later overrides earlier):
+ *   .env → .env.local → .env.<NODE_ENV> → .env.<NODE_ENV>.local
+ *
+ * Decrypted values live only in the returned store — never on disk, and never
+ * in process.env unless populateProcessEnv is explicitly enabled.
+ */
+export function config(options: ConfigOptions): Promise<SecretKeyStore>;
+
+/** Resolve the ordered list of existing .env files for the cascade. */
+export function resolveEnvFiles(options?: {
+    cwd?: string;
+    path?: string | string[];
+    nodeEnv?: string;
+}): string[];
+
+/** Merge parsed .env files into a single key→value map (later files win). */
+export function mergeEnvFiles(files: string[]): {
+    merged: Record<string, string>;
+    used: string[];
+};
+
+// ═══════════════════════════════════════════════════════════════════════════
+// KEY ROTATION
+// ═══════════════════════════════════════════════════════════════════════════
+
+export type ContentFormat = 'env' | 'json' | 'yaml';
+
+/**
+ * Re-encrypt the already-encrypted values in a config file under a new KMS Key
+ * ID (decrypting with the old key first). Plaintext values are left untouched.
+ */
+export function rotateKMSContent(
+    content: string,
+    format: ContentFormat,
+    oldKmsKeyId: string,
+    newKmsKeyId: string,
+    options?: EncryptContentOptions & DecryptContentOptions
+): Promise<{ content: string; rotated: string[] }>;

@@ -107,25 +107,28 @@ function parseEnvContent(content) {
  * @returns {string} Reconstructed content
  */
 function reconstructEnvContent(parsed) {
-    return parsed.map(entry => {
-        if (entry.type === 'keyvalue') {
-            const needsQuotes = entry.value.includes(' ') ||
-                entry.value.includes('#') ||
-                entry.value.includes('=') ||
-                entry.value.includes('\n');
+    return parsed
+        .map(entry => {
+            if (entry.type === 'keyvalue') {
+                const needsQuotes =
+                    entry.value.includes(' ') ||
+                    entry.value.includes('#') ||
+                    entry.value.includes('=') ||
+                    entry.value.includes('\n');
 
-            let line = needsQuotes
-                ? `${entry.key}="${entry.value}"`
-                : `${entry.key}=${entry.value}`;
+                let line = needsQuotes
+                    ? `${entry.key}="${entry.value}"`
+                    : `${entry.key}=${entry.value}`;
 
-            if (entry.inlineComment) {
-                line += ` ${entry.inlineComment}`;
+                if (entry.inlineComment) {
+                    line += ` ${entry.inlineComment}`;
+                }
+
+                return line;
             }
-
-            return line;
-        }
-        return entry.raw;
-    }).join('\n');
+            return entry.raw;
+        })
+        .join('\n');
 }
 
 /**
@@ -146,7 +149,11 @@ async function encryptKMSEnvContent(content, kmsKeyId, options = {}) {
     const logger = opts.logger;
 
     if (!content || typeof content !== 'string') {
-        throw new ContentError('Content must be a non-empty string', CONTENT_ERROR_CODES.EMPTY_CONTENT, 'env');
+        throw new ContentError(
+            'Content must be a non-empty string',
+            CONTENT_ERROR_CODES.EMPTY_CONTENT,
+            'env'
+        );
     }
 
     const parsed = parseEnvContent(content);
@@ -229,7 +236,11 @@ async function decryptKMSEnvContent(content, kmsKeyId, options = {}) {
     const logger = opts.logger;
 
     if (!content || typeof content !== 'string') {
-        throw new ContentError('Content must be a non-empty string', CONTENT_ERROR_CODES.EMPTY_CONTENT, 'env');
+        throw new ContentError(
+            'Content must be a non-empty string',
+            CONTENT_ERROR_CODES.EMPTY_CONTENT,
+            'env'
+        );
     }
 
     const parsed = parseEnvContent(content);
@@ -304,7 +315,11 @@ async function encryptKMSJsonContent(content, kmsKeyId, options = {}) {
     validateKmsKeyId(kmsKeyId);
 
     if (!content || typeof content !== 'string') {
-        throw new ContentError('Content must be a non-empty string', CONTENT_ERROR_CODES.EMPTY_CONTENT, 'json');
+        throw new ContentError(
+            'Content must be a non-empty string',
+            CONTENT_ERROR_CODES.EMPTY_CONTENT,
+            'json'
+        );
     }
 
     let obj;
@@ -341,7 +356,11 @@ async function decryptKMSJsonContent(content, kmsKeyId, options = {}) {
     validateKmsKeyId(kmsKeyId);
 
     if (!content || typeof content !== 'string') {
-        throw new ContentError('Content must be a non-empty string', CONTENT_ERROR_CODES.EMPTY_CONTENT, 'json');
+        throw new ContentError(
+            'Content must be a non-empty string',
+            CONTENT_ERROR_CODES.EMPTY_CONTENT,
+            'json'
+        );
     }
 
     let obj;
@@ -387,13 +406,19 @@ async function encryptKMSYamlContent(content, kmsKeyId, options = {}) {
     validateKmsKeyId(kmsKeyId);
 
     if (!content || typeof content !== 'string') {
-        throw new ContentError('Content must be a non-empty string', CONTENT_ERROR_CODES.EMPTY_CONTENT, 'yaml');
+        throw new ContentError(
+            'Content must be a non-empty string',
+            CONTENT_ERROR_CODES.EMPTY_CONTENT,
+            'yaml'
+        );
     }
 
     // Log warning if js-yaml not available
     const opts = buildEncryptOptions(options);
     if (!isJsYamlAvailable()) {
-        opts.logger?.warn?.('[encryptKMSYamlContent] js-yaml not installed. Using simple parser (limited features).');
+        opts.logger?.warn?.(
+            '[encryptKMSYamlContent] js-yaml not installed. Using simple parser (limited features).'
+        );
     }
 
     const obj = parseYaml(content);
@@ -422,13 +447,19 @@ async function decryptKMSYamlContent(content, kmsKeyId, options = {}) {
     validateKmsKeyId(kmsKeyId);
 
     if (!content || typeof content !== 'string') {
-        throw new ContentError('Content must be a non-empty string', CONTENT_ERROR_CODES.EMPTY_CONTENT, 'yaml');
+        throw new ContentError(
+            'Content must be a non-empty string',
+            CONTENT_ERROR_CODES.EMPTY_CONTENT,
+            'yaml'
+        );
     }
 
     // Log warning if js-yaml not available
     const opts = buildDecryptOptions(options);
     if (!isJsYamlAvailable()) {
-        opts.logger?.warn?.('[decryptKMSYamlContent] js-yaml not installed. Using simple parser (limited features).');
+        opts.logger?.warn?.(
+            '[decryptKMSYamlContent] js-yaml not installed. Using simple parser (limited features).'
+        );
     }
 
     const obj = parseYaml(content);
@@ -461,4 +492,3 @@ module.exports = {
     encryptKMSYamlContent,
     decryptKMSYamlContent
 };
-

@@ -2,7 +2,15 @@
 
 A secure secrets management library for Node.js applications using AWS KMS encryption.
 
+[![CI](https://github.com/faizahmedfarooqui/secret-keystore/actions/workflows/ci.yml/badge.svg)](https://github.com/faizahmedfarooqui/secret-keystore/actions/workflows/ci.yml)
+[![npm version](https://img.shields.io/npm/v/@faizahmedfarooqui/secret-keystore.svg)](https://www.npmjs.com/package/@faizahmedfarooqui/secret-keystore)
+[![Node](https://img.shields.io/badge/node-%3E%3D18-brightgreen.svg)](https://nodejs.org)
+![Tests](https://img.shields.io/badge/tests-95%20passing-success.svg)
+[![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](./LICENSE)
+
 **Available on npm:** [`@faizahmedfarooqui/secret-keystore`](https://www.npmjs.com/package/@faizahmedfarooqui/secret-keystore)
+
+> **Design principle:** the only thing a developer ever handles is a **KMS Key ID** — which is *not* a secret. No private keys, no passphrases, no key material. AWS KMS holds all key material server-side and authorizes access via IAM, and decrypted values live **only in memory** (never in `process.env`, never on disk) to keep the blast radius of any RCE as small as possible.
 
 ## Table of Contents
 
@@ -17,6 +25,7 @@ A secure secrets management library for Node.js applications using AWS KMS encry
 - [CLI Reference](#cli-reference)
 - [Library API](#library-api)
 - [Runtime Keystore](#runtime-keystore)
+  - [Zero-Config Loader: `config()`](#zero-config-loader-config)
 - [Configuration Options](#configuration-options)
 - [How It Works](#how-it-works)
 - [Examples](#examples)
@@ -24,13 +33,17 @@ A secure secrets management library for Node.js applications using AWS KMS encry
 - [Error Handling](#error-handling)
 - [TypeScript Support](#typescript-support)
 - [Troubleshooting](#troubleshooting)
+- [Development](#development)
 - [Security](#security)
 
 ## Features
 
 - **Multi-Format Support** — Encrypt secrets in `.env`, JSON, and YAML files
+- **Zero-Config Loader** — `config()` discovers and cascades your `.env` files, decrypts them, and loads everything into an in-memory keystore in one call
+- **Encrypt & Decrypt CLI** — Full command-line round-trip (`encrypt` and `decrypt`)
 - **Pattern Matching** — Use glob patterns (`**`) to select keys at any depth
 - **AWS KMS Encryption** — Supports symmetric and asymmetric (RSA) keys; uses envelope encryption for RSA (no plaintext size limit)
+- **Key-ID-Only** — Developers only ever share a non-secret KMS Key ID; no key material to leak
 - **IAM Role by Default** — Uses IAM roles for authentication (explicit credentials require opt-in)
 - **Secure In-Memory Storage** — Decrypted values stored with AES-256-GCM encryption in memory
 - **Never in `process.env`** — Decrypted secrets are only accessible via the keystore API
@@ -39,6 +52,7 @@ A secure secrets management library for Node.js applications using AWS KMS encry
 - **Dual API** — Content-based (convenient) + Object-based (flexible)
 - **Comment Preservation** — Preserves comments and formatting in config files
 - **Security-First Dependencies** — Minimal dependencies for security-sensitive operations
+- **Battle-Tested** — Offline test suite (`node:test`, mocked KMS) with CI across Node 18/20/22, plus lint, format, and type-definition checks
 
 ## Important Limitations
 
@@ -163,7 +177,11 @@ export default async function DashboardPage() {
 The package is published to the public npm registry. Install with:
 
 ```bash
+# npm
 npm install @faizahmedfarooqui/secret-keystore
+
+# pnpm
+pnpm add @faizahmedfarooqui/secret-keystore
 ```
 
 > **Note:** The package includes `@aws-sdk/client-kms` as a dependency.
@@ -176,16 +194,21 @@ When working with local development or Docker builds where `file:` references do
 
 ```bash
 # From the secret-keystore directory
+
+# npm
 npm pack
+
+# pnpm
+pnpm pack
 
 # This creates: faizahmedfarooqui-secret-keystore-1.0.0.tgz (scoped package name)
 ```
 
-Or use the provided npm script:
+Or use the provided script:
 
 ```bash
 # Pack and move to a specific directory (e.g., consumer project)
-npm run pack:local
+npm run pack:local   # or: pnpm run pack:local
 ```
 
 #### Step 2: Install the Tarball
@@ -197,7 +220,11 @@ In your consumer project:
 cp ../secret-keystore/faizahmedfarooqui-secret-keystore-1.0.0.tgz ./
 
 # Install from tarball
+# npm
 npm install ./faizahmedfarooqui-secret-keystore-1.0.0.tgz
+
+# pnpm
+pnpm add ./faizahmedfarooqui-secret-keystore-1.0.0.tgz
 ```
 
 Or add a script to your consumer's `package.json`:
@@ -249,7 +276,7 @@ RUN yarn install --frozen-lockfile
 ```bash
 # 1. In the keystore library directory
 cd secret-keystore
-npm pack
+npm pack          # or: pnpm pack
 mv faizahmedfarooqui-secret-keystore-*.tgz ../your-consumer-project/
 
 # 2. In your consumer project
@@ -258,7 +285,7 @@ cd ../your-consumer-project
 # Update package.json to reference the tarball
 # "dependencies": { "@faizahmedfarooqui/secret-keystore": "file:./faizahmedfarooqui-secret-keystore-1.0.0.tgz" }
 
-npm install
+npm install       # or: pnpm install
 
 # 3. Commit the tarball to your repo (for CI/CD)
 git add faizahmedfarooqui-secret-keystore-*.tgz
@@ -270,7 +297,11 @@ git commit -m "Add @faizahmedfarooqui/secret-keystore tarball for Docker builds"
 For YAML files with complex features (anchors, aliases, multi-line strings), install `js-yaml`:
 
 ```bash
+# npm
 npm install js-yaml
+
+# pnpm
+pnpm add js-yaml
 ```
 
 Without `js-yaml`, the library uses a simple built-in parser that handles basic YAML structures. If your YAML uses advanced features without `js-yaml` installed, you'll get a clear error message.
@@ -367,14 +398,31 @@ bootstrap();
 ## CLI Reference
 
 ```bash
-npx @faizahmedfarooqui/secret-keystore encrypt [options]
+npx @faizahmedfarooqui/secret-keystore <encrypt|decrypt> [options]
 ```
+
+### Commands
+
+| Command | Description |
+|---------|-------------|
+| `encrypt` | Encrypt selected values in a config file (writes `ENC[...]` in place or to `--output`) |
+| `decrypt` | Decrypt the `ENC[...]` values in a config file (writes plaintext in place or to `--output`) |
+| `run` | Decrypt and launch a command with secrets injected into **the child process's** environment |
+| `rotate` | Re-encrypt a file under a new KMS Key ID (requires `--old-kms-key-id`) |
+| `edit` | Decrypt → open in `$EDITOR` → re-encrypt on save (via a `0600` temp file, then shredded) |
+| `init` | Scaffold a starter `.env` |
+| `keys` | List the keys/paths in a file — **names only, never values** |
+| `status` | Show which keys are encrypted vs plaintext — **names only, never values** |
+| `import` | Encrypt an existing plaintext `.env` in place (migration from plain dotenv) |
+
+All commands share the options below and auto-detect the format from the file extension.
 
 ### Options
 
 | Option | Required | Default | Description |
 |--------|----------|---------|-------------|
 | `--kms-key-id=<id>` | **Yes** | — | KMS Key ID (ARN, UUID, or alias) |
+| `--old-kms-key-id=<id>` | For `rotate` | — | The current key the file is encrypted with (rotate's source key) |
 | `--path=<path>` | No | `./.env` | Path to the config file |
 | `--format=<format>` | No | auto-detect | File format: `env`, `json`, `yaml` |
 | `--keys=<keys>` | No | All keys | Comma-separated list of keys to encrypt |
@@ -442,7 +490,43 @@ npx @faizahmedfarooqui/secret-keystore encrypt \
   --path="./.env" \
   --output="./.env.encrypted" \
   --kms-key-id="alias/my-key"
+
+# Decrypt all encrypted values in place
+npx @faizahmedfarooqui/secret-keystore decrypt \
+  --path="./.env" \
+  --kms-key-id="alias/my-key"
+
+# Decrypt to a separate plaintext file
+npx @faizahmedfarooqui/secret-keystore decrypt \
+  --path="./.env.encrypted" \
+  --output="./.env" \
+  --kms-key-id="alias/my-key"
+
+# Run your app with secrets injected into its environment (no plaintext on disk)
+npx @faizahmedfarooqui/secret-keystore run \
+  --kms-key-id="alias/my-key" -- node server.js
+
+# Rotate a file from an old key to a new key (re-encrypts only encrypted values)
+npx @faizahmedfarooqui/secret-keystore rotate \
+  --old-kms-key-id="alias/old-key" \
+  --kms-key-id="alias/new-key"
+
+# Edit an encrypted file in your $EDITOR (re-encrypts on save)
+npx @faizahmedfarooqui/secret-keystore edit \
+  --kms-key-id="alias/my-key" --path="./.env"
+
+# Inspect a file without revealing any values
+npx @faizahmedfarooqui/secret-keystore status --path="./.env"
+npx @faizahmedfarooqui/secret-keystore keys   --path="./.env"
+
+# Migrate an existing plaintext .env to encrypted, in place
+npx @faizahmedfarooqui/secret-keystore import \
+  --kms-key-id="alias/my-key" --path="./.env"
 ```
+
+> **`run` vs `config()`:** `run` is for apps you don't want to modify — it injects secrets into the spawned **child's** environment (so the child's `env` *can* see them; the parent never does). `config()` keeps secrets in your app's in-memory store and out of `env` entirely, but requires the app to call it. Both avoid writing plaintext to disk.
+
+> **Tip:** For running your app, prefer `run` or the in-memory [`config()` loader](#zero-config-loader-config) over decrypting to a plaintext file on disk.
 
 ## Library API
 
@@ -559,14 +643,62 @@ fs.writeFileSync('./secrets.yaml', yaml.dump(result.object));
 | `isJsYamlAvailable()` | Check if `js-yaml` is installed |
 | `parseYaml(content)` | Parse YAML to object (uses js-yaml if available) |
 | `serializeYaml(obj)` | Serialize object to YAML string |
+| `config(options)` | Discover + cascade `.env` files, decrypt, and load into an in-memory keystore |
+| `resolveEnvFiles(options?)` | Resolve the ordered list of `.env` files for the cascade |
+| `rotateKMSContent(content, format, oldKeyId, newKeyId, options?)` | Re-encrypt a file's encrypted values under a new KMS Key ID |
 
 > **Note:** `kmsKeyId` is **REQUIRED** in all functions. The library does not search content for it.
 
 ## Runtime Keystore
 
+### Zero-Config Loader: `config()`
+
+The fastest way to load secrets at runtime. `config()` discovers and **cascades** your `.env`
+files, decrypts the `ENC[...]` values via KMS, and loads everything into an in-memory
+[`SecretKeyStore`](#createsecretkeystoresource-kmskeyid-options) — in a single call.
+
+```javascript
+const { config } = require('@faizahmedfarooqui/secret-keystore');
+
+// Discovers .env, .env.local, .env.<NODE_ENV>, .env.<NODE_ENV>.local (later wins)
+const secrets = await config({ kmsKeyId: 'alias/my-key' });
+
+const dbPassword = secrets.get('DB_PASSWORD'); // decrypted, in-memory only
+const all = secrets.getAll();
+
+process.on('SIGTERM', () => secrets.destroy());
+```
+
+**Cascade order** (later files override earlier ones):
+
+```
+.env  →  .env.local  →  .env.<NODE_ENV>  →  .env.<NODE_ENV>.local
+```
+
+**Security by design:**
+
+- Decrypted values live **only** in the returned keystore's memory — never written to disk, and **never** placed in `process.env`. This deliberately keeps secrets off `env`, so an attacker with code execution can't simply dump them.
+- `kmsKeyId` is **required and explicit** — there is no environment-variable fallback.
+- Plaintext (non-`ENC[...]`) values are passed through unchanged; only encrypted values hit KMS.
+
+**Options:**
+
+| Option | Default | Description |
+|--------|---------|-------------|
+| `kmsKeyId` | — (**required**) | KMS Key ID (ARN, UUID, or alias) |
+| `cwd` | `process.cwd()` | Base directory for file discovery |
+| `path` | — | Explicit file path(s); skips the cascade when set |
+| `nodeEnv` | `process.env.NODE_ENV` | Environment name used in the cascade |
+| `populateProcessEnv` | `false` | Opt-in: also copy decrypted values into `process.env` (**discouraged** — widens RCE blast radius; logs a warning) |
+| `processEnv` | `process.env` | Target object when `populateProcessEnv` is enabled |
+
+`config()` also accepts all [keystore options](#layered-options-structure) (TTL, `autoRefresh`, `security`, `aws`, etc.), which are forwarded to the underlying keystore.
+
+> **Migrating from `dotenv`?** `dotenv` populates `process.env`; `config()` deliberately does not. Read secrets from the returned store (`secrets.get('KEY')`) instead. If you must have `process.env` behavior, set `populateProcessEnv: true` and accept the larger blast radius.
+
 ### `createSecretKeyStore(source, kmsKeyId, options?)`
 
-Creates and initializes a secure in-memory keystore with decrypted secrets.
+Creates and initializes a secure in-memory keystore with decrypted secrets. Use this directly when you already have the file content/object in hand; use [`config()`](#zero-config-loader-config) when you want automatic file discovery and cascading.
 
 ```javascript
 const { createSecretKeyStore } = require('@faizahmedfarooqui/secret-keystore');
@@ -777,11 +909,11 @@ Complete working sample applications are available in the `examples/` directory:
 ```bash
 # 1. Install the main package dependencies
 cd secret-keystore
-npm install
+pnpm install
 
 # 2. Install example dependencies
 cd examples/nestjs   # or examples/nextjs
-npm install
+pnpm install
 
 # 3. Configure environment
 cp .env.example .env  # or .env.local for Next.js
@@ -789,11 +921,11 @@ cp .env.example .env  # or .env.local for Next.js
 # 4. Update KMS_KEY_ID in .env with your actual KMS key
 
 # 5. Encrypt secrets
-npm run encrypt:keys
+pnpm run encrypt:keys
 
 # 6. Run the app
-npm run start:dev    # NestJS
-npm run dev          # Next.js
+pnpm run start:dev    # NestJS
+pnpm run dev          # Next.js
 ```
 
 See each example's README for detailed setup instructions.
@@ -1010,6 +1142,38 @@ Your AWS credentials don't have permission to use the KMS key:
 ### Already encrypted values being skipped
 
 This is expected behavior. The library automatically detects and skips values that are already encrypted (prefixed with `ENC[`) to prevent double-encryption.
+
+## Development
+
+This project uses [pnpm](https://pnpm.io) and the built-in Node test runner — no heavyweight test framework, zero runtime test dependencies.
+
+```bash
+# Install dev dependencies
+pnpm install
+
+# Run the test suite (node:test, fully offline — KMS is mocked)
+pnpm test
+
+# Tests with coverage (enforces a minimum threshold)
+pnpm test:coverage
+
+# Lint, format check, and type-definition check
+pnpm lint
+pnpm format:check
+pnpm typecheck
+```
+
+**Quality gates.** Every push and pull request runs CI across **Node 18, 20, and 22**:
+
+| Gate | Tool | What it checks |
+|------|------|----------------|
+| Tests | `node:test` + [`aws-sdk-client-mock`](https://github.com/m-radzikowski/aws-sdk-client-mock) | 95 tests covering both symmetric and RSA-envelope KMS paths, content/object/keystore/CLI/`config()`/rotation |
+| Coverage | `c8` | Minimum coverage thresholds enforced |
+| Lint | ESLint | Code correctness |
+| Format | Prettier | Consistent style |
+| Types | `tsc --strict` | `index.d.ts` compiles and stays in sync with runtime error codes |
+
+All tests run without an AWS account or network access — KMS is mocked with a reversible stand-in that exercises both the direct-encrypt (symmetric) and envelope (RSA) code paths.
 
 ## Security
 

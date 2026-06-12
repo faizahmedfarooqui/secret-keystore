@@ -137,10 +137,7 @@ const {
 // OBJECT-BASED OPERATIONS
 // ═══════════════════════════════════════════════════════════════════════════
 
-const {
-    encryptKMSObject,
-    decryptKMSObject
-} = require('./object-operations');
+const { encryptKMSObject, decryptKMSObject } = require('./object-operations');
 
 // ═══════════════════════════════════════════════════════════════════════════
 // CONTENT-BASED OPERATIONS
@@ -161,20 +158,20 @@ const {
 // YAML UTILITIES
 // ═══════════════════════════════════════════════════════════════════════════
 
-const {
-    isJsYamlAvailable,
-    parseYaml,
-    serializeYaml
-} = require('./yaml-utils');
+const { isJsYamlAvailable, parseYaml, serializeYaml } = require('./yaml-utils');
 
 // ═══════════════════════════════════════════════════════════════════════════
 // RUNTIME KEYSTORE
 // ═══════════════════════════════════════════════════════════════════════════
 
-const {
-    SecretKeyStore,
-    createSecretKeyStore
-} = require('./keystore');
+const { SecretKeyStore, createSecretKeyStore } = require('./keystore');
+
+// ═══════════════════════════════════════════════════════════════════════════
+// RUNTIME CONFIG LOADER
+// ═══════════════════════════════════════════════════════════════════════════
+
+const { config, resolveEnvFiles, mergeEnvFiles } = require('./config');
+const { rotateKMSContent } = require('./rotate');
 
 // ═══════════════════════════════════════════════════════════════════════════
 // EXPORTS
@@ -372,6 +369,22 @@ module.exports = {
 
     /** Create and initialize a keystore */
     createSecretKeyStore,
+
+    // =========================================================================
+    // RUNTIME CONFIG LOADER
+    // =========================================================================
+
+    /** Discover + cascade .env files, decrypt, and load into an in-memory store */
+    config,
+
+    /** Resolve the ordered list of .env files for the cascade */
+    resolveEnvFiles,
+
+    /** Merge parsed .env files into one key→value map (later wins) */
+    mergeEnvFiles,
+
+    /** Re-encrypt a file's encrypted values under a new KMS Key ID */
+    rotateKMSContent,
 
     // =========================================================================
     // ATTESTATION

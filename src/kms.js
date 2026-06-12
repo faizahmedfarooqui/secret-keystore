@@ -6,7 +6,12 @@
  */
 
 const crypto = require('node:crypto');
-const { KMSClient, EncryptCommand, DecryptCommand, DescribeKeyCommand } = require('@aws-sdk/client-kms');
+const {
+    KMSClient,
+    EncryptCommand,
+    DecryptCommand,
+    DescribeKeyCommand
+} = require('@aws-sdk/client-kms');
 const {
     KmsError,
     AttestationError,
@@ -235,22 +240,9 @@ async function getAttestationDocumentLegacy(attestation) {
     return null;
 }
 
-/**
- * Check if error is a 5-minute attestation age limit error
- * @param {Error} error - Error to check
- * @returns {boolean}
- */
-function isAttestationAgeLimitError(error) {
-    const message = error.message || '';
-    const causeMessage = error.cause?.message || '';
-
-    return message.includes('exceeded the five-minute age limit') ||
-        message.includes('exceeded the five minute age limit') ||
-        message.includes('age limit') ||
-        causeMessage.includes('age limit') ||
-        message.includes('cannot parse the attestation document') ||
-        causeMessage.includes('cannot parse');
-}
+// NOTE: The 5-minute attestation age-limit detection and refresh-and-retry is
+// handled inside AttestationManager (_isAgeLimitError + reinitialize + retry),
+// so no duplicate helper is needed here.
 
 // ═══════════════════════════════════════════════════════════════════════════
 // ENVELOPE ENCRYPTION (RSA / ASYMMETRIC KEYS ONLY)
@@ -276,10 +268,7 @@ async function encryptEnvelopeRSA(plaintext, kmsKeyId, options = {}) {
     const iv = crypto.randomBytes(IV_LENGTH);
 
     const cipher = crypto.createCipheriv('aes-256-gcm', dek, iv);
-    const ciphertext = Buffer.concat([
-        cipher.update(plaintextBuffer),
-        cipher.final()
-    ]);
+    const ciphertext = Buffer.concat([cipher.update(plaintextBuffer), cipher.final()]);
     const authTag = cipher.getAuthTag();
 
     const encryptCommand = new EncryptCommand({
@@ -291,7 +280,9 @@ async function encryptEnvelopeRSA(plaintext, kmsKeyId, options = {}) {
     const encryptedDEK = Buffer.from(encResponse.CiphertextBlob);
 
     const encDEKLen = encryptedDEK.length;
-    const envelope = Buffer.allocUnsafe(1 + 2 + encDEKLen + IV_LENGTH + ciphertext.length + GCM_TAG_LENGTH);
+    const envelope = Buffer.allocUnsafe(
+        1 + 2 + encDEKLen + IV_LENGTH + ciphertext.length + GCM_TAG_LENGTH
+    );
     let offset = 0;
     envelope[offset++] = ENVELOPE_VERSION;
     envelope.writeUInt16BE(encDEKLen, offset);
@@ -325,12 +316,15 @@ async function encryptEnvelopeRSA(plaintext, kmsKeyId, options = {}) {
  * @returns {Promise<string>} Decrypted plaintext
  * @private
  */
-async function decryptEnvelopeRSA(client, envelope, kmsKeyId, options = {}) {
+async function decryptEnvelopeRSA(client, envelope, kmsKeyId, _options = {}) {
     const encDEKLen = envelope.readUInt16BE(1);
     const encryptedDEK = envelope.subarray(3, 3 + encDEKLen);
     const iv = envelope.subarray(3 + encDEKLen, 3 + encDEKLen + IV_LENGTH);
     const tag = envelope.subarray(envelope.length - GCM_TAG_LENGTH);
-    const ciphertext = envelope.subarray(3 + encDEKLen + IV_LENGTH, envelope.length - GCM_TAG_LENGTH);
+    const ciphertext = envelope.subarray(
+        3 + encDEKLen + IV_LENGTH,
+        envelope.length - GCM_TAG_LENGTH
+    );
 
     const decryptCommand = new DecryptCommand({
         KeyId: kmsKeyId,
@@ -339,16 +333,17 @@ async function decryptEnvelopeRSA(client, envelope, kmsKeyId, options = {}) {
     });
     const decResponse = await client.send(decryptCommand);
     if (!decResponse.Plaintext) {
-        throw new KmsError('KMS did not return plaintext (envelope DEK)', KMS_ERROR_CODES.DECRYPT_FAILED, kmsKeyId);
+        throw new KmsError(
+            'KMS did not return plaintext (envelope DEK)',
+            KMS_ERROR_CODES.DECRYPT_FAILED,
+            kmsKeyId
+        );
     }
     const dek = Buffer.from(decResponse.Plaintext);
 
     const decipher = crypto.createDecipheriv('aes-256-gcm', dek, iv);
     decipher.setAuthTag(tag);
-    const plaintext = Buffer.concat([
-        decipher.update(ciphertext),
-        decipher.final()
-    ]);
+    const plaintext = Buffer.concat([decipher.update(ciphertext), decipher.final()]);
     return plaintext.toString('utf-8');
 }
 
@@ -449,7 +444,11 @@ async function decryptKMSValue(ciphertext, kmsKeyId, options = {}) {
         }
         ciphertextBuffer = Buffer.from(base64String, 'base64');
     } else {
-        throw new KmsError('Invalid ciphertext format', KMS_ERROR_CODES.INVALID_CIPHERTEXT, kmsKeyId);
+        throw new KmsError(
+            'Invalid ciphertext format',
+            KMS_ERROR_CODES.INVALID_CIPHERTEXT,
+            kmsKeyId
+        );
     }
 
     const client = getKmsClient(options);
@@ -513,7 +512,9 @@ async function decryptWithAttestation(client, ciphertextBuffer, kmsKeyId, algori
 
         // Fallback to standard if allowed
         if (attestation.fallbackToStandard !== false) {
-            logger?.warn?.(`[KMS] Attestation init failed, falling back to standard: ${error.message}`);
+            logger?.warn?.(
+                `[KMS] Attestation init failed, falling back to standard: ${error.message}`
+            );
             return await decryptStandard(client, ciphertextBuffer, kmsKeyId, algorithm, options);
         }
 
@@ -526,15 +527,10 @@ async function decryptWithAttestation(client, ciphertextBuffer, kmsKeyId, algori
 
     // Use AttestationManager to decrypt (handles 5-minute refresh internally)
     try {
-        const plaintext = await manager.decryptWithAttestation(
-            client,
-            ciphertextBuffer,
-            kmsKeyId,
-            {
-                encryptionAlgorithm: algorithm,
-                encryptionContext: attestation.encryptionContext
-            }
-        );
+        const plaintext = await manager.decryptWithAttestation(client, ciphertextBuffer, kmsKeyId, {
+            encryptionAlgorithm: algorithm,
+            encryptionContext: attestation.encryptionContext
+        });
         return plaintext.toString('utf-8');
     } catch (error) {
         // Check if we should fallback
@@ -554,7 +550,14 @@ async function decryptWithAttestation(client, ciphertextBuffer, kmsKeyId, algori
  *
  * @private
  */
-async function decryptWithAttestationMaterials(client, ciphertextBuffer, kmsKeyId, algorithm, materials, logger) {
+async function decryptWithAttestationMaterials(
+    client,
+    ciphertextBuffer,
+    kmsKeyId,
+    algorithm,
+    materials,
+    logger
+) {
     const { document: attestationDoc, privateKey } = materials;
     const { unwrapCms } = getAttestationModule();
 
@@ -585,7 +588,9 @@ async function decryptWithAttestationMaterials(client, ciphertextBuffer, kmsKeyI
     }
 
     const ciphertextForRecipient = Buffer.from(response.CiphertextForRecipient);
-    logger?.debug?.(`[KMS] Received CiphertextForRecipient (${ciphertextForRecipient.length} bytes)`);
+    logger?.debug?.(
+        `[KMS] Received CiphertextForRecipient (${ciphertextForRecipient.length} bytes)`
+    );
 
     // Unwrap CMS EnvelopedData using the private key
     logger?.debug?.('[KMS] Unwrapping CMS EnvelopedData...');
@@ -616,14 +621,20 @@ async function decryptStandard(client, ciphertextBuffer, kmsKeyId, algorithm, op
         const response = await client.send(command);
 
         if (!response.Plaintext) {
-            throw new KmsError('KMS did not return plaintext', KMS_ERROR_CODES.DECRYPT_FAILED, kmsKeyId);
+            throw new KmsError(
+                'KMS did not return plaintext',
+                KMS_ERROR_CODES.DECRYPT_FAILED,
+                kmsKeyId
+            );
         }
 
         return Buffer.from(response.Plaintext).toString('utf-8');
     } catch (error) {
         // If RSA algorithm failed, try without algorithm (symmetric)
-        if (algorithm === 'RSAES_OAEP_SHA_256' &&
-            (error.message?.includes('incompatible') || error.name?.includes('InvalidCiphertext'))) {
+        if (
+            algorithm === 'RSAES_OAEP_SHA_256' &&
+            (error.message?.includes('incompatible') || error.name?.includes('InvalidCiphertext'))
+        ) {
             logger?.debug?.('[KMS] RSA algorithm failed, trying symmetric...');
 
             // Clear cached algorithm
@@ -636,7 +647,11 @@ async function decryptStandard(client, ciphertextBuffer, kmsKeyId, algorithm, op
             const response = await client.send(fallbackCommand);
 
             if (!response.Plaintext) {
-                throw new KmsError('KMS did not return plaintext', KMS_ERROR_CODES.DECRYPT_FAILED, kmsKeyId);
+                throw new KmsError(
+                    'KMS did not return plaintext',
+                    KMS_ERROR_CODES.DECRYPT_FAILED,
+                    kmsKeyId
+                );
             }
 
             return Buffer.from(response.Plaintext).toString('utf-8');
@@ -841,4 +856,3 @@ module.exports = {
     ENCRYPTED_PREFIX,
     ENCRYPTED_SUFFIX
 };
-

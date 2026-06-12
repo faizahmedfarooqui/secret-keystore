@@ -70,7 +70,9 @@ async function unwrapCms(ciphertextForRecipient, privateKeyPem) {
 
     // Verify it's EnvelopedData (OID: 1.2.840.113549.1.7.3)
     if (contentInfo.contentType !== '1.2.840.113549.1.7.3') {
-        throw new Error(`Expected CMS EnvelopedData (1.2.840.113549.1.7.3), got ${contentInfo.contentType}`);
+        throw new Error(
+            `Expected CMS EnvelopedData (1.2.840.113549.1.7.3), got ${contentInfo.contentType}`
+        );
     }
 
     // 3. Parse EnvelopedData
@@ -97,7 +99,11 @@ async function unwrapCms(ciphertextForRecipient, privateKeyPem) {
     } else if (decryptResult instanceof ArrayBuffer) {
         plaintext = Buffer.from(decryptResult);
     } else if (ArrayBuffer.isView(decryptResult)) {
-        plaintext = Buffer.from(decryptResult.buffer, decryptResult.byteOffset, decryptResult.byteLength);
+        plaintext = Buffer.from(
+            decryptResult.buffer,
+            decryptResult.byteOffset,
+            decryptResult.byteLength
+        );
     } else {
         throw new TypeError(`Unexpected decrypt result type: ${typeof decryptResult}`);
     }
@@ -128,7 +134,7 @@ async function importPrivateKey(privateKeyPem) {
             name: 'RSA-OAEP',
             hash: 'SHA-256'
         },
-        false,  // not extractable
+        false, // not extractable
         ['decrypt']
     );
 
@@ -158,4 +164,3 @@ module.exports = {
     validatePrivateKeyFormat,
     initializePkijsEngine
 };
-

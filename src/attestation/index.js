@@ -36,10 +36,7 @@ const {
 } = require('./attestation-client');
 
 // Attestation manager
-const {
-    AttestationManager,
-    createAttestationManager
-} = require('./attestation-manager');
+const { AttestationManager, createAttestationManager } = require('./attestation-manager');
 
 module.exports = {
     // Key pair
@@ -67,4 +64,3 @@ module.exports = {
     AttestationManager,
     createAttestationManager
 };
-

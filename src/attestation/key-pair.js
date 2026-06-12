@@ -24,18 +24,20 @@ function generateEphemeralKeyPair() {
     });
 
     // Export public key as DER (for attestation request)
-    const publicKeyDer = crypto.createPublicKey({ key: publicKey, format: 'pem' })
+    const publicKeyDer = crypto
+        .createPublicKey({ key: publicKey, format: 'pem' })
         .export({ format: 'der', type: 'spki' });
 
     // Export private key as DER (for CMS unwrap with OpenSSL, if needed)
-    const privateKeyDer = crypto.createPrivateKey({ key: privateKey, format: 'pem' })
+    const privateKeyDer = crypto
+        .createPrivateKey({ key: privateKey, format: 'pem' })
         .export({ format: 'der', type: 'pkcs1' });
 
     return {
-        publicKey,      // PEM format
-        privateKey,     // PEM format (PKCS#8)
-        publicKeyDer,   // DER format (SPKI)
-        privateKeyDer   // DER format (PKCS#1)
+        publicKey, // PEM format
+        privateKey, // PEM format (PKCS#8)
+        publicKeyDer, // DER format (SPKI)
+        privateKeyDer // DER format (PKCS#1)
     };
 }
 
@@ -75,9 +77,7 @@ function pemToDerPrivate(pem) {
  * @returns {string}
  */
 function toBase64Url(buf) {
-    return Buffer.from(buf).toString('base64')
-        .replaceAll('+', '-')
-        .replaceAll('/', '_');
+    return Buffer.from(buf).toString('base64').replaceAll('+', '-').replaceAll('/', '_');
 }
 
 /**
@@ -127,4 +127,3 @@ module.exports = {
     generateNonce,
     prepareAttestationParams
 };
-

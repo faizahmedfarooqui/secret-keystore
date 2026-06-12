@@ -11,11 +11,14 @@ FROM node:20-alpine AS deps
 
 WORKDIR /app
 
+# Enable pnpm via corepack
+RUN corepack enable && corepack prepare pnpm@9.15.9 --activate
+
 # Copy package files
-COPY package*.json ./
+COPY package.json pnpm-lock.yaml ./
 
 # Install production dependencies only
-RUN npm ci --only=production && npm cache clean --force
+RUN pnpm install --frozen-lockfile --prod && pnpm store prune
 
 # -----------------------------------------------------------------------------
 # Stage 2: Build application
@@ -24,15 +27,18 @@ FROM node:20-alpine AS builder
 
 WORKDIR /app
 
+# Enable pnpm via corepack
+RUN corepack enable && corepack prepare pnpm@9.15.9 --activate
+
 # Copy package files and install all dependencies (including dev)
-COPY package*.json ./
-RUN npm ci
+COPY package.json pnpm-lock.yaml ./
+RUN pnpm install --frozen-lockfile
 
 # Copy source code
 COPY . .
 
 # Build the NestJS application
-RUN npm run build
+RUN pnpm run build
 
 # -----------------------------------------------------------------------------
 # Stage 3: Production image

@@ -15,11 +15,14 @@ RUN apk add --no-cache libc6-compat
 
 WORKDIR /app
 
+# Enable pnpm via corepack
+RUN corepack enable && corepack prepare pnpm@9.15.9 --activate
+
 # Copy package files
-COPY package*.json ./
+COPY package.json pnpm-lock.yaml ./
 
 # Install all dependencies
-RUN npm ci && npm cache clean --force
+RUN pnpm install --frozen-lockfile && pnpm store prune
 
 # -----------------------------------------------------------------------------
 # Stage 2: Build application
@@ -30,6 +33,9 @@ RUN apk add --no-cache libc6-compat
 
 WORKDIR /app
 
+# Enable pnpm via corepack
+RUN corepack enable && corepack prepare pnpm@9.15.9 --activate
+
 # Copy dependencies from deps stage
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
@@ -39,7 +45,7 @@ ENV NEXT_TELEMETRY_DISABLED=1
 ENV NODE_ENV=production
 
 # Build the Next.js application with standalone output
-RUN npm run build
+RUN pnpm run build
 
 # -----------------------------------------------------------------------------
 # Stage 3: Production image

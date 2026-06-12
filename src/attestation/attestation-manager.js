@@ -74,10 +74,7 @@ class AttestationManager {
             this.cachedKeyPair = generateEphemeralKeyPair();
 
             // 2. Prepare attestation request parameters
-            const params = prepareAttestationParams(
-                this.cachedKeyPair.publicKey,
-                this.userData
-            );
+            const params = prepareAttestationParams(this.cachedKeyPair.publicKey, this.userData);
 
             // 3. Fetch attestation document
             this._log('debug', `Fetching attestation document from ${this.endpoint}...`);
@@ -238,11 +235,16 @@ class AttestationManager {
 
         // With Recipient, KMS returns CiphertextForRecipient, NOT Plaintext
         if (!response.CiphertextForRecipient) {
-            throw new Error('KMS did not return CiphertextForRecipient - check key policy and Recipient support');
+            throw new Error(
+                'KMS did not return CiphertextForRecipient - check key policy and Recipient support'
+            );
         }
 
         const ciphertextForRecipient = Buffer.from(response.CiphertextForRecipient);
-        this._log('debug', `Received CiphertextForRecipient (${ciphertextForRecipient.length} bytes)`);
+        this._log(
+            'debug',
+            `Received CiphertextForRecipient (${ciphertextForRecipient.length} bytes)`
+        );
 
         // Unwrap CMS EnvelopedData using our ephemeral private key
         this._log('debug', 'Unwrapping CMS EnvelopedData...');
@@ -335,4 +337,3 @@ module.exports = {
     AttestationManager,
     createAttestationManager
 };
-

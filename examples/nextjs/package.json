@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "Next.js example app demonstrating @faizahmedfarooqui/secret-keystore integration",
   "private": true,
+  "packageManager": "pnpm@9.15.9",
   "scripts": {
     "dev": "next dev",
     "build": "next build",

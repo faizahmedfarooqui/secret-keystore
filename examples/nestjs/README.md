@@ -14,14 +14,14 @@ A complete NestJS application demonstrating `@faizahmedfarooqui/secret-keystore`
 
 ```bash
 # From the repository root
-npm install
+pnpm install
 ```
 
 ### 2. Install example dependencies
 
 ```bash
 cd examples/nestjs
-npm install
+pnpm install
 ```
 
 ### 3. Configure environment
@@ -57,10 +57,10 @@ WEBHOOK_SECRET=whsec_abcdef123456
 export KMS_KEY_ID="arn:aws:kms:us-east-1:123456789:key/your-actual-key-id"
 
 # Encrypt using IAM role (production)
-npm run encrypt:keys
+pnpm run encrypt:keys
 
 # Or encrypt using explicit credentials (local dev)
-npm run encrypt:local
+pnpm run encrypt:local
 ```
 
 After encryption, your `.env` will look like:
@@ -77,7 +77,7 @@ WEBHOOK_SECRET=ENC[AQICAHh...]  # Encrypted!
 
 ```bash
 # Development mode
-npm run start:dev
+pnpm run start:dev
 ```
 
 ### 7. Test the API
@@ -185,9 +185,9 @@ The library handles the full attestation lifecycle:
 
 | Script | Description |
 |--------|-------------|
-| `npm run start:dev` | Run in development mode with hot reload |
-| `npm run encrypt:keys` | Encrypt secrets using IAM role |
-| `npm run encrypt:local` | Encrypt secrets using explicit credentials |
+| `pnpm run start:dev` | Run in development mode with hot reload |
+| `pnpm run encrypt:keys` | Encrypt secrets using IAM role |
+| `pnpm run encrypt:local` | Encrypt secrets using explicit credentials |
 
 ## Docker
 

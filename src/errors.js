@@ -30,10 +30,12 @@ class SecretKeyStoreError extends Error {
             code: this.code,
             message: this.message,
             timestamp: this.timestamp.toISOString(),
-            cause: this.cause ? {
-                name: this.cause.name,
-                message: this.cause.message
-            } : undefined
+            cause: this.cause
+                ? {
+                      name: this.cause.name,
+                      message: this.cause.message
+                  }
+                : undefined
         };
     }
 }
@@ -267,7 +269,10 @@ class SecretNotFoundError extends KeystoreError {
 
 class NotInitializedError extends KeystoreError {
     constructor() {
-        super('SecretKeyStore not initialized. Call initialize() first.', KEYSTORE_ERROR_CODES.NOT_INITIALIZED);
+        super(
+            'SecretKeyStore not initialized. Call initialize() first.',
+            KEYSTORE_ERROR_CODES.NOT_INITIALIZED
+        );
         this.name = 'NotInitializedError';
     }
 }

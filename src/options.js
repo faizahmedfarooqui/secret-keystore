@@ -28,8 +28,8 @@ const RESERVED_KEYS = [
 // ═══════════════════════════════════════════════════════════════════════════
 
 const DEFAULT_AWS_OPTIONS = {
-    credentials: null,  // Uses IAM role by default
-    region: null        // Uses AWS_REGION env var or SDK default
+    credentials: null, // Uses IAM role by default
+    region: null // Uses AWS_REGION env var or SDK default
 };
 
 const DEFAULT_ATTESTATION_OPTIONS = {
@@ -37,27 +37,27 @@ const DEFAULT_ATTESTATION_OPTIONS = {
     required: false,
     fallbackToStandard: true,
     // Full attestation mode (default) - library handles key pair generation + CMS unwrap
-    endpoint: null,     // Attestation endpoint URL (default: localhost:50123)
-    timeout: 10000,     // Attestation request timeout in ms
-    userData: '',       // User data to include in attestation document
+    endpoint: null, // Attestation endpoint URL (default: localhost:50123)
+    timeout: 10000, // Attestation request timeout in ms
+    userData: '', // User data to include in attestation document
     // Legacy mode - pre-generated document + private key
-    document: null,     // Buffer | (() => Buffer) | (() => Promise<Buffer>) | string (base64)
-    privateKey: null,   // PEM private key for CMS unwrap (required with document in legacy mode)
+    document: null, // Buffer | (() => Buffer) | (() => Promise<Buffer>) | string (base64)
+    privateKey: null, // PEM private key for CMS unwrap (required with document in legacy mode)
     // KMS options
-    encryptionContext: null  // KMS encryption context
+    encryptionContext: null // KMS encryption context
 };
 
 const DEFAULT_COMMON_OPTIONS = {
     aws: { ...DEFAULT_AWS_OPTIONS },
     attestation: { ...DEFAULT_ATTESTATION_OPTIONS },
-    logger: null,       // Uses console if not provided
-    logLevel: 'info'    // 'debug' | 'info' | 'warn' | 'error' | 'silent'
+    logger: null, // Uses console if not provided
+    logLevel: 'info' // 'debug' | 'info' | 'warn' | 'error' | 'silent'
 };
 
 const DEFAULT_ENCRYPT_OPTIONS = {
     ...DEFAULT_COMMON_OPTIONS,
     output: {
-        format: 'prefixed'  // 'base64' | 'buffer' | 'prefixed' (ENC[...])
+        format: 'prefixed' // 'base64' | 'buffer' | 'prefixed' (ENC[...])
     },
     skip: {
         empty: true,
@@ -69,7 +69,7 @@ const DEFAULT_ENCRYPT_OPTIONS = {
 const DEFAULT_DECRYPT_OPTIONS = {
     ...DEFAULT_COMMON_OPTIONS,
     input: {
-        format: 'auto'      // 'auto' | 'base64' | 'buffer' | 'prefixed'
+        format: 'auto' // 'auto' | 'base64' | 'buffer' | 'prefixed'
     },
     skip: {
         unencrypted: true
@@ -82,8 +82,8 @@ const DEFAULT_DECRYPT_OPTIONS = {
 };
 
 const DEFAULT_PATH_SELECTION_OPTIONS = {
-    paths: null,        // Explicit dot-notation paths
-    patterns: null,     // Glob patterns using ** for any-depth matching
+    paths: null, // Explicit dot-notation paths
+    patterns: null, // Glob patterns using ** for any-depth matching
     exclude: {
         paths: null,
         patterns: null
@@ -94,7 +94,7 @@ const DEFAULT_CONTENT_OPTIONS = {
     preserve: {
         comments: true,
         formatting: true,
-        anchors: true       // YAML only
+        anchors: true // YAML only
     }
 };
 
@@ -106,9 +106,9 @@ const DEFAULT_KEYSTORE_OPTIONS = {
         secureWipe: true
     },
     access: {
-        ttl: null,          // Secret expiry (ms), null = never
+        ttl: null, // Secret expiry (ms), null = never
         autoRefresh: true,
-        accessLimit: null,  // Max access count per key
+        accessLimit: null, // Max access count per key
         clearOnAccess: false
     },
     validation: {
@@ -117,8 +117,8 @@ const DEFAULT_KEYSTORE_OPTIONS = {
     },
     retry: {
         attempts: 3,
-        delay: 1000,        // ms
-        backoff: 'exponential'  // 'linear' | 'exponential'
+        delay: 1000, // ms
+        backoff: 'exponential' // 'linear' | 'exponential'
     }
 };
 
@@ -140,11 +140,13 @@ function deepMerge(target, source) {
             continue;
         }
 
-        if (source[key] !== null &&
+        if (
+            source[key] !== null &&
             typeof source[key] === 'object' &&
             !Array.isArray(source[key]) &&
             !Buffer.isBuffer(source[key]) &&
-            typeof source[key] !== 'function') {
+            typeof source[key] !== 'function'
+        ) {
             result[key] = deepMerge(target[key] || {}, source[key]);
         } else {
             result[key] = source[key];
@@ -272,8 +274,8 @@ function validateAttestationDocument(attestation) {
  * @private
  */
 function validatePrivateKeyFormat(privateKey) {
-    const isValidPem = typeof privateKey === 'string' &&
-        privateKey.includes('-----BEGIN PRIVATE KEY-----');
+    const isValidPem =
+        typeof privateKey === 'string' && privateKey.includes('-----BEGIN PRIVATE KEY-----');
 
     if (!isValidPem) {
         throw new ValidationError(
@@ -380,7 +382,10 @@ function validateCommonOptions(options) {
     validateAwsOptions(options.aws);
     validateAttestationOptions(options.attestation);
 
-    if (options.logLevel && !['debug', 'info', 'warn', 'error', 'silent'].includes(options.logLevel)) {
+    if (
+        options.logLevel &&
+        !['debug', 'info', 'warn', 'error', 'silent'].includes(options.logLevel)
+    ) {
         throw new ValidationError(
             'logLevel must be one of: debug, info, warn, error, silent',
             VALIDATION_ERROR_CODES.INVALID_VALUE,
@@ -534,4 +539,3 @@ module.exports = {
     buildKeystoreOptions,
     buildAwsSdkOptions
 };
-

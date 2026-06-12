@@ -58,14 +58,14 @@ function getJsYaml() {
  * - Document separators (---, ...)
  */
 const COMPLEX_YAML_PATTERNS = [
-    /&\w+/,                // Anchors (&anchor)
-    /\*\w+/,               // Aliases (*anchor)
-    /<<:/,                 // Merge key
-    /:\s*[|>]/m,           // Multi-line strings
-    /^---/m,               // Document separator
-    /^\.\.\./m,            // Document end
-    /!!\w+/,               // Type tags
-    /^\s*-\s*[^#\n]+:/m    // Nested objects in arrays
+    /&\w+/, // Anchors (&anchor)
+    /\*\w+/, // Aliases (*anchor)
+    /<<:/, // Merge key
+    /:\s*[|>]/m, // Multi-line strings
+    /^---/m, // Document separator
+    /^\.\.\./m, // Document end
+    /!!\w+/, // Type tags
+    /^\s*-\s*[^#\n]+:/m // Nested objects in arrays
 ];
 
 /**
@@ -107,8 +107,10 @@ function parseYamlSimple(content) {
         }
 
         // Remove quotes
-        if ((value.startsWith('"') && value.endsWith('"')) ||
-            (value.startsWith("'") && value.endsWith("'"))) {
+        if (
+            (value.startsWith('"') && value.endsWith('"')) ||
+            (value.startsWith("'") && value.endsWith("'"))
+        ) {
             value = value.slice(1, -1);
         }
 
@@ -145,8 +147,12 @@ function serializeYamlSimple(obj, indent = 0) {
             result += `${spaces}${key}:\n`;
             result += serializeYamlSimple(value, indent + 1);
         } else {
-            const needsQuotes = typeof value === 'string' &&
-                (value.includes(':') || value.includes('#') || value.includes(' ') || value.includes('\n'));
+            const needsQuotes =
+                typeof value === 'string' &&
+                (value.includes(':') ||
+                    value.includes('#') ||
+                    value.includes(' ') ||
+                    value.includes('\n'));
             const formattedValue = needsQuotes ? `"${value}"` : value;
             result += `${spaces}${key}: ${formattedValue}\n`;
         }
@@ -189,7 +195,7 @@ function parseYaml(content) {
     if (hasComplexYamlFeatures(content)) {
         throw new ContentError(
             'YAML content has complex features (anchors, multi-line strings, etc.) that require js-yaml. ' +
-            'Install js-yaml: npm install js-yaml',
+                'Install js-yaml: npm install js-yaml',
             CONTENT_ERROR_CODES.PARSE_FAILED,
             'yaml'
         );

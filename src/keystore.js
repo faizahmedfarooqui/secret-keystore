@@ -11,13 +11,13 @@
 const crypto = require('node:crypto');
 const { decryptKMSValues } = require('./kms');
 const { decryptKMSObject } = require('./object-operations');
-const { decryptKMSEnvContent, decryptKMSJsonContent, decryptKMSYamlContent } = require('./content-operations');
-const { buildKeystoreOptions, validateKmsKeyId } = require('./options');
 const {
-    KeystoreError,
-    SecretNotFoundError,
-    KEYSTORE_ERROR_CODES
-} = require('./errors');
+    decryptKMSEnvContent,
+    decryptKMSJsonContent,
+    decryptKMSYamlContent
+} = require('./content-operations');
+const { buildKeystoreOptions, validateKmsKeyId } = require('./options');
+const { KeystoreError, SecretNotFoundError, KEYSTORE_ERROR_CODES } = require('./errors');
 
 // ═══════════════════════════════════════════════════════════════════════════
 // SECURE MEMORY UTILITIES
@@ -139,8 +139,9 @@ class SecretKeyStore {
 
             this.#initialized = true;
             const duration = Date.now() - startTime;
-            logger?.info?.(`[SecretKeyStore] Initialized ${this.#store.size} secrets in ${duration}ms`);
-
+            logger?.info?.(
+                `[SecretKeyStore] Initialized ${this.#store.size} secrets in ${duration}ms`
+            );
         } catch (error) {
             this.#initPromise = null;
             throw new KeystoreError(
@@ -296,7 +297,9 @@ class SecretKeyStore {
             try {
                 await this.#refreshKey(key);
             } catch (error) {
-                this.#options.logger?.error?.(`[SecretKeyStore] Auto-refresh failed for ${key}: ${error.message}`);
+                this.#options.logger?.error?.(
+                    `[SecretKeyStore] Auto-refresh failed for ${key}: ${error.message}`
+                );
             }
         }, refreshTime);
 
@@ -358,10 +361,7 @@ class SecretKeyStore {
                 // Will be refreshed on next access
                 return false;
             }
-            throw new KeystoreError(
-                `Secret expired: ${key}`,
-                KEYSTORE_ERROR_CODES.SECRET_EXPIRED
-            );
+            throw new KeystoreError(`Secret expired: ${key}`, KEYSTORE_ERROR_CODES.SECRET_EXPIRED);
         }
 
         return false;
@@ -395,10 +395,7 @@ class SecretKeyStore {
 
     #ensureInitialized() {
         if (this.#destroyed) {
-            throw new KeystoreError(
-                'Keystore has been destroyed',
-                KEYSTORE_ERROR_CODES.DESTROYED
-            );
+            throw new KeystoreError('Keystore has been destroyed', KEYSTORE_ERROR_CODES.DESTROYED);
         }
         if (!this.#initialized) {
             throw new KeystoreError(
@@ -679,4 +676,3 @@ module.exports = {
     SecretKeyStore,
     createSecretKeyStore
 };
-

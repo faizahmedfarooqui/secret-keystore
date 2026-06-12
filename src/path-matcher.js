@@ -82,7 +82,12 @@ function getAllPaths(obj, prefix = '') {
     for (const [key, value] of Object.entries(obj)) {
         const currentPath = prefix ? `${prefix}.${key}` : key;
 
-        if (value !== null && typeof value === 'object' && !Array.isArray(value) && !Buffer.isBuffer(value)) {
+        if (
+            value !== null &&
+            typeof value === 'object' &&
+            !Array.isArray(value) &&
+            !Buffer.isBuffer(value)
+        ) {
             // Recurse into nested object
             paths.push(...getAllPaths(value, currentPath));
         } else {
@@ -106,8 +111,8 @@ function getAllPaths(obj, prefix = '') {
 function patternToRegex(pattern) {
     // Escape special regex characters except **
     let escaped = pattern
-        .replaceAll(/[.+^${}()|[\]\\]/g, String.raw`\$&`)  // Escape special chars
-        .replaceAll('**', '{{DOUBLE_STAR}}');               // Temporarily replace **
+        .replaceAll(/[.+^${}()|[\]\\]/g, String.raw`\$&`) // Escape special chars
+        .replaceAll('**', '{{DOUBLE_STAR}}'); // Temporarily replace **
 
     // Replace ** with regex pattern (match any depth)
     escaped = escaped.replaceAll('{{DOUBLE_STAR}}', '.*');
@@ -240,11 +245,7 @@ function excludePaths(paths, exclude) {
 function validatePathsExist(requestedPaths, existingPaths) {
     for (const path of requestedPaths) {
         if (!existingPaths.includes(path)) {
-            throw new PathError(
-                `Path not found: ${path}`,
-                PATH_ERROR_CODES.NOT_FOUND,
-                path
-            );
+            throw new PathError(`Path not found: ${path}`, PATH_ERROR_CODES.NOT_FOUND, path);
         }
     }
 }
@@ -316,4 +317,3 @@ module.exports = {
     // Object transformation
     transformAtPaths
 };
-
