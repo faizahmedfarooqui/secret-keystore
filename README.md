@@ -12,6 +12,15 @@ A secure secrets management library for Node.js applications using AWS KMS encry
 
 > **Design principle:** the only thing a developer ever handles is a **KMS Key ID** — which is *not* a secret. No private keys, no passphrases, no key material. AWS KMS holds all key material server-side and authorizes access via IAM, and decrypted values live **only in memory** (never in `process.env`, never on disk) to keep the blast radius of any RCE as small as possible.
 
+## Guides & Deep-Dives
+
+A full walkthrough lives on the blog, as part of the ***[Mastering Encryption](https://blog.faizahmed.in/series/encryption)*** series:
+
+- **[Encrypted .env for Node.js with AWS KMS: The Complete Guide](https://blog.faizahmed.in/encrypted-env-aws-kms-nodejs-complete-guide)** — the overview and map.
+- **[Your .env Is a Loaded Gun: A Saner Threat Model for Node.js Secrets](https://blog.faizahmed.in/nodejs-secrets-threat-model-aws-kms)** — why `process.env` is the problem.
+- **[Encrypt Your .env with One Command: The secret-keystore CLI](https://blog.faizahmed.in/secret-keystore-cli-encrypt-env-aws-kms)** — every CLI command, hands-on.
+- **[Loading Secrets at Runtime Without Leaking Them](https://blog.faizahmed.in/secret-keystore-runtime-config-loader-nodejs)** — `config()`, the keystore, rotation, and Nitro attestation.
+
 ## Table of Contents
 
 - [Features](#features)
