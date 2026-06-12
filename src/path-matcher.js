@@ -1,5 +1,5 @@
 /**
- * @faizahmedfarooqui/secret-keystore - Path Matching
+ * @faizahmed/secret-keystore - Path Matching
  *
  * Utilities for matching paths in nested objects using ** patterns.
  * Only ** (any-depth) pattern is supported, not * (single-level).

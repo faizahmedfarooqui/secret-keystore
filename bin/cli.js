@@ -1,12 +1,12 @@
 #!/usr/bin/env node
 
 /**
- * @faizahmedfarooqui/secret-keystore CLI
+ * @faizahmed/secret-keystore CLI
  *
  * Command-line interface for encrypting configuration files.
  *
  * Usage:
- *   npx @faizahmedfarooqui/secret-keystore encrypt [options]
+ *   npx @faizahmed/secret-keystore encrypt [options]
  */
 
 const fs = require('node:fs');
@@ -208,10 +208,10 @@ function printVersion() {
 
 function printHelp() {
     console.log(String.raw`
-@faizahmedfarooqui/secret-keystore - Secure secrets management with AWS KMS
+@faizahmed/secret-keystore - Secure secrets management with AWS KMS
 
 USAGE:
-  npx @faizahmedfarooqui/secret-keystore <command> [options]
+  npx @faizahmed/secret-keystore <command> [options]
 
 COMMANDS:
   encrypt    Encrypt values in a configuration file
@@ -264,56 +264,56 @@ AUTHENTICATION:
 
 EXAMPLES:
   # Encrypt all keys in .env (kms-key-id is REQUIRED)
-  npx @faizahmedfarooqui/secret-keystore encrypt --kms-key-id="alias/my-key"
+  npx @faizahmed/secret-keystore encrypt --kms-key-id="alias/my-key"
 
   # Encrypt specific keys only
-  npx @faizahmedfarooqui/secret-keystore encrypt \
+  npx @faizahmed/secret-keystore encrypt \
     --kms-key-id="arn:aws:kms:us-east-1:123456789:key/abc-123" \
     --keys="DB_PASSWORD,API_KEY"
 
   # Encrypt YAML file with patterns
-  npx @faizahmedfarooqui/secret-keystore encrypt \
+  npx @faizahmed/secret-keystore encrypt \
     --path="./secrets.yaml" \
     --kms-key-id="alias/my-key" \
     --patterns="**.password,**.secret"
 
   # Dry run to preview changes
-  npx @faizahmedfarooqui/secret-keystore encrypt \
+  npx @faizahmed/secret-keystore encrypt \
     --kms-key-id="alias/my-key" \
     --dry-run
 
   # Encrypt to a different output file
-  npx @faizahmedfarooqui/secret-keystore encrypt \
+  npx @faizahmed/secret-keystore encrypt \
     --path="./.env" \
     --output="./.env.encrypted" \
     --kms-key-id="alias/my-key"
 
   # Decrypt all encrypted values in a file (in place)
-  npx @faizahmedfarooqui/secret-keystore decrypt \
+  npx @faizahmed/secret-keystore decrypt \
     --path="./.env" \
     --kms-key-id="alias/my-key"
 
   # Decrypt to a separate output file
-  npx @faizahmedfarooqui/secret-keystore decrypt \
+  npx @faizahmed/secret-keystore decrypt \
     --path="./.env.encrypted" \
     --output="./.env" \
     --kms-key-id="alias/my-key"
 
   # Run your app with decrypted secrets injected into its environment
-  npx @faizahmedfarooqui/secret-keystore run \
+  npx @faizahmed/secret-keystore run \
     --kms-key-id="alias/my-key" -- node server.js
 
   # Rotate a file from an old key to a new key
-  npx @faizahmedfarooqui/secret-keystore rotate \
+  npx @faizahmed/secret-keystore rotate \
     --old-kms-key-id="alias/old-key" \
     --kms-key-id="alias/new-key"
 
   # Edit an encrypted file in $EDITOR (re-encrypts on save)
-  npx @faizahmedfarooqui/secret-keystore edit \
+  npx @faizahmed/secret-keystore edit \
     --kms-key-id="alias/my-key" --path="./.env"
 
   # Inspect a file without revealing values
-  npx @faizahmedfarooqui/secret-keystore status --path="./.env"
+  npx @faizahmed/secret-keystore status --path="./.env"
 `);
 }
 
@@ -482,7 +482,7 @@ function printSummary(result, verb = 'Encrypted') {
 // ═══════════════════════════════════════════════════════════════════════════
 
 async function runEncrypt(args) {
-    console.log('\n🔐 @faizahmedfarooqui/secret-keystore - Encrypt\n');
+    console.log('\n🔐 @faizahmed/secret-keystore - Encrypt\n');
 
     validateRequiredKmsKeyId(args.kmsKeyId);
 
@@ -559,7 +559,7 @@ async function decryptByFormat(content, format, kmsKeyId, options) {
 }
 
 async function runDecrypt(args) {
-    console.log('\n🔓 @faizahmedfarooqui/secret-keystore - Decrypt\n');
+    console.log('\n🔓 @faizahmed/secret-keystore - Decrypt\n');
 
     validateRequiredKmsKeyId(args.kmsKeyId);
 
@@ -701,7 +701,7 @@ async function runRun(args) {
 // ═══════════════════════════════════════════════════════════════════════════
 
 async function runRotate(args) {
-    console.log('\n🔄 @faizahmedfarooqui/secret-keystore - Rotate\n');
+    console.log('\n🔄 @faizahmed/secret-keystore - Rotate\n');
 
     validateRequiredKmsKeyId(args.kmsKeyId);
 
@@ -768,7 +768,7 @@ function secureDelete(file) {
 }
 
 async function runEdit(args) {
-    console.log('\n📝 @faizahmedfarooqui/secret-keystore - Edit\n');
+    console.log('\n📝 @faizahmed/secret-keystore - Edit\n');
 
     validateRequiredKmsKeyId(args.kmsKeyId);
 
@@ -840,7 +840,7 @@ async function runEdit(args) {
 // ═══════════════════════════════════════════════════════════════════════════
 
 function runInit(args) {
-    console.log('\n🚀 @faizahmedfarooqui/secret-keystore - Init\n');
+    console.log('\n🚀 @faizahmed/secret-keystore - Init\n');
 
     const target = path.resolve(process.cwd(), args.path || './.env');
     if (fs.existsSync(target)) {
@@ -885,7 +885,7 @@ function runKeys(args) {
 }
 
 function runStatus(args) {
-    console.log('\n📋 @faizahmedfarooqui/secret-keystore - Status\n');
+    console.log('\n📋 @faizahmed/secret-keystore - Status\n');
 
     const resolvedPath = resolveAndValidatePath(args.path);
     const format = args.format || detectFormat(resolvedPath);
@@ -909,9 +909,7 @@ function runStatus(args) {
 // ═══════════════════════════════════════════════════════════════════════════
 
 async function runImport(args) {
-    console.log(
-        '\n📥 @faizahmedfarooqui/secret-keystore - Import (migrate plaintext → encrypted)\n'
-    );
+    console.log('\n📥 @faizahmed/secret-keystore - Import (migrate plaintext → encrypted)\n');
     // Encrypt all non-reserved keys in place.
     await runEncrypt({ ...args, keys: null, patterns: null });
 }

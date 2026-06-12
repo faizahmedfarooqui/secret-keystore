@@ -1,5 +1,5 @@
 /**
- * @faizahmedfarooqui/secret-keystore - Object-Based Operations
+ * @faizahmed/secret-keystore - Object-Based Operations
  *
  * Functions for encrypting/decrypting nested objects using path patterns.
  * Supports ** pattern matching for any-depth selection.

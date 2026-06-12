@@ -1,5 +1,5 @@
 /**
- * @faizahmedfarooqui/secret-keystore - YAML Utilities
+ * @faizahmed/secret-keystore - YAML Utilities
  *
  * Handles YAML parsing/serialization with optional js-yaml dependency.
  * Falls back to simple parser for basic YAML when js-yaml is not installed.

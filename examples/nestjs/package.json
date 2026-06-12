@@ -1,7 +1,7 @@
 {
-  "name": "@faizahmedfarooqui/nestjs-secret-keystore-example",
+  "name": "@faizahmed/nestjs-secret-keystore-example",
   "version": "1.0.0",
-  "description": "NestJS example app demonstrating @faizahmedfarooqui/secret-keystore integration",
+  "description": "NestJS example app demonstrating @faizahmed/secret-keystore integration",
   "private": true,
   "packageManager": "pnpm@9.15.9",
   "scripts": {
@@ -9,16 +9,16 @@
     "start": "nest start",
     "start:dev": "nest start --watch",
     "start:prod": "node dist/main",
-    "encrypt": "npx @faizahmedfarooqui/secret-keystore encrypt --kms-key-id=\"$KMS_KEY_ID\" --path=\"./.env\"",
-    "encrypt:keys": "npx @faizahmedfarooqui/secret-keystore encrypt --kms-key-id=\"$KMS_KEY_ID\" --keys=\"API_KEY,JWT_SECRET,WEBHOOK_SECRET\" --path=\"./.env\"",
-    "encrypt:local": "npx @faizahmedfarooqui/secret-keystore encrypt --kms-key-id=\"$KMS_KEY_ID\" --keys=\"API_KEY,JWT_SECRET,WEBHOOK_SECRET\" --path=\"./.env\" --use-credentials"
+    "encrypt": "npx @faizahmed/secret-keystore encrypt --kms-key-id=\"$KMS_KEY_ID\" --path=\"./.env\"",
+    "encrypt:keys": "npx @faizahmed/secret-keystore encrypt --kms-key-id=\"$KMS_KEY_ID\" --keys=\"API_KEY,JWT_SECRET,WEBHOOK_SECRET\" --path=\"./.env\"",
+    "encrypt:local": "npx @faizahmed/secret-keystore encrypt --kms-key-id=\"$KMS_KEY_ID\" --keys=\"API_KEY,JWT_SECRET,WEBHOOK_SECRET\" --path=\"./.env\" --use-credentials"
   },
   "dependencies": {
     "@nestjs/common": "^10.0.0",
     "@nestjs/config": "^3.0.0",
     "@nestjs/core": "^10.0.0",
     "@nestjs/platform-express": "^10.0.0",
-    "@faizahmedfarooqui/secret-keystore": "file:../../",
+    "@faizahmed/secret-keystore": "file:../../",
     "reflect-metadata": "^0.2.0",
     "rxjs": "^7.8.1"
   },

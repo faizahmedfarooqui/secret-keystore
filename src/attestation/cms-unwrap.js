@@ -1,5 +1,5 @@
 /**
- * @faizahmedfarooqui/secret-keystore - CMS EnvelopedData Unwrapping
+ * @faizahmed/secret-keystore - CMS EnvelopedData Unwrapping
  *
  * Uses PKIjs and asn1js to unwrap CMS EnvelopedData returned by AWS KMS
  * when using the Recipient parameter with attestation.

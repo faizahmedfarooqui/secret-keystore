@@ -1,19 +1,19 @@
 {
-  "name": "@faizahmedfarooqui/nextjs-secret-keystore-example",
+  "name": "@faizahmed/nextjs-secret-keystore-example",
   "version": "1.0.0",
-  "description": "Next.js example app demonstrating @faizahmedfarooqui/secret-keystore integration",
+  "description": "Next.js example app demonstrating @faizahmed/secret-keystore integration",
   "private": true,
   "packageManager": "pnpm@9.15.9",
   "scripts": {
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "encrypt": "npx @faizahmedfarooqui/secret-keystore encrypt --kms-key-id=\"$KMS_KEY_ID\" --path=\"./.env.local\"",
-    "encrypt:keys": "npx @faizahmedfarooqui/secret-keystore encrypt --kms-key-id=\"$KMS_KEY_ID\" --keys=\"API_KEY,JWT_SECRET,WEBHOOK_SECRET\" --path=\"./.env.local\"",
-    "encrypt:local": "npx @faizahmedfarooqui/secret-keystore encrypt --kms-key-id=\"$KMS_KEY_ID\" --keys=\"API_KEY,JWT_SECRET,WEBHOOK_SECRET\" --path=\"./.env.local\" --use-credentials"
+    "encrypt": "npx @faizahmed/secret-keystore encrypt --kms-key-id=\"$KMS_KEY_ID\" --path=\"./.env.local\"",
+    "encrypt:keys": "npx @faizahmed/secret-keystore encrypt --kms-key-id=\"$KMS_KEY_ID\" --keys=\"API_KEY,JWT_SECRET,WEBHOOK_SECRET\" --path=\"./.env.local\"",
+    "encrypt:local": "npx @faizahmed/secret-keystore encrypt --kms-key-id=\"$KMS_KEY_ID\" --keys=\"API_KEY,JWT_SECRET,WEBHOOK_SECRET\" --path=\"./.env.local\" --use-credentials"
   },
   "dependencies": {
-    "@faizahmedfarooqui/secret-keystore": "file:../../",
+    "@faizahmed/secret-keystore": "file:../../",
     "next": "^14.0.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0"

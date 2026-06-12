@@ -1,5 +1,5 @@
 /**
- * @faizahmedfarooqui/secret-keystore - Error Classes
+ * @faizahmed/secret-keystore - Error Classes
  *
  * Comprehensive error taxonomy with codes for proper handling.
  * All errors extend SecretKeyStoreError as the base class.

@@ -1,5 +1,5 @@
 /**
- * @faizahmedfarooqui/secret-keystore
+ * @faizahmed/secret-keystore
  *
  * Secure secrets management library with AWS KMS encryption.
  *

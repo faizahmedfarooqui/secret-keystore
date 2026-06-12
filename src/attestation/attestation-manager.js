@@ -1,5 +1,5 @@
 /**
- * @faizahmedfarooqui/secret-keystore - Attestation Manager
+ * @faizahmed/secret-keystore - Attestation Manager
  *
  * Manages the attestation document lifecycle:
  * - Generates ephemeral RSA key pairs

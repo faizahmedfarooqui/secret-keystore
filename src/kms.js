@@ -1,5 +1,5 @@
 /**
- * @faizahmedfarooqui/secret-keystore - KMS Operations
+ * @faizahmed/secret-keystore - KMS Operations
  *
  * Core KMS encryption and decryption operations.
  * Uses AWS SDK directly with support for attestation.

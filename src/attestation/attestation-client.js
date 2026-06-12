@@ -1,5 +1,5 @@
 /**
- * @faizahmedfarooqui/secret-keystore - Attestation Client
+ * @faizahmed/secret-keystore - Attestation Client
  *
  * Fetches attestation documents from AWS Nitro Enclaves or Anjuna endpoints.
  * The attestation document contains the caller's public key and is signed

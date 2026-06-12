@@ -1,5 +1,5 @@
 /**
- * @faizahmedfarooqui/secret-keystore - Key Rotation
+ * @faizahmed/secret-keystore - Key Rotation
  *
  * Re-encrypt the already-encrypted values in a config file under a NEW KMS Key
  * ID, decrypting them with the OLD key first. Values that were plaintext stay

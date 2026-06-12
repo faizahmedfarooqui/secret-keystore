@@ -1,6 +1,6 @@
 # Security
 
-This document explains the security model of [`@faizahmedfarooqui/secret-keystore`](https://www.npmjs.com/package/@faizahmedfarooqui/secret-keystore) (available on npm) and how it protects your secrets.
+This document explains the security model of [`@faizahmed/secret-keystore`](https://www.npmjs.com/package/@faizahmed/secret-keystore) (available on npm) and how it protects your secrets.
 
 > **🔐 Key Design Decision:** This package uses **IAM roles by default**. Explicit AWS credentials require opt-in. This ensures production deployments are secure by default.
 
@@ -213,7 +213,7 @@ sequenceDiagram
 ### How to Enable Attestation
 
 ```javascript
-const { createSecretKeyStore } = require('@faizahmedfarooqui/secret-keystore');
+const { createSecretKeyStore } = require('@faizahmed/secret-keystore');
 
 const keyStore = await createSecretKeyStore(
   { type: 'env', content },
@@ -271,7 +271,7 @@ sequenceDiagram
 For advanced use cases, use `AttestationManager` directly:
 
 ```javascript
-const { createAttestationManager } = require('@faizahmedfarooqui/secret-keystore');
+const { createAttestationManager } = require('@faizahmed/secret-keystore');
 const { KMSClient } = require('@aws-sdk/client-kms');
 
 // Create and auto-initialize
@@ -417,7 +417,7 @@ Only use explicit credentials when IAM roles are not available (e.g., local deve
 
 ```bash
 # CLI: Explicit opt-in required
-npx @faizahmedfarooqui/secret-keystore encrypt \
+npx @faizahmed/secret-keystore encrypt \
   --kms-key-id="alias/my-key" \
   --use-credentials
 ```

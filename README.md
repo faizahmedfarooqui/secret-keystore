@@ -3,12 +3,12 @@
 A secure secrets management library for Node.js applications using AWS KMS encryption.
 
 [![CI](https://github.com/faizahmedfarooqui/secret-keystore/actions/workflows/ci.yml/badge.svg)](https://github.com/faizahmedfarooqui/secret-keystore/actions/workflows/ci.yml)
-[![npm version](https://img.shields.io/npm/v/@faizahmedfarooqui/secret-keystore.svg)](https://www.npmjs.com/package/@faizahmedfarooqui/secret-keystore)
+[![npm version](https://img.shields.io/npm/v/@faizahmed/secret-keystore.svg)](https://www.npmjs.com/package/@faizahmed/secret-keystore)
 [![Node](https://img.shields.io/badge/node-%3E%3D18-brightgreen.svg)](https://nodejs.org)
 ![Tests](https://img.shields.io/badge/tests-95%20passing-success.svg)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](./LICENSE)
 
-**Available on npm:** [`@faizahmedfarooqui/secret-keystore`](https://www.npmjs.com/package/@faizahmedfarooqui/secret-keystore)
+**Available on npm:** [`@faizahmed/secret-keystore`](https://www.npmjs.com/package/@faizahmed/secret-keystore)
 
 > **Design principle:** the only thing a developer ever handles is a **KMS Key ID** — which is *not* a secret. No private keys, no passphrases, no key material. AWS KMS holds all key material server-side and authorizes access via IAM, and decrypted values live **only in memory** (never in `process.env`, never on disk) to keep the blast radius of any RCE as small as possible.
 
@@ -178,10 +178,10 @@ The package is published to the public npm registry. Install with:
 
 ```bash
 # npm
-npm install @faizahmedfarooqui/secret-keystore
+npm install @faizahmed/secret-keystore
 
 # pnpm
-pnpm add @faizahmedfarooqui/secret-keystore
+pnpm add @faizahmed/secret-keystore
 ```
 
 > **Note:** The package includes `@aws-sdk/client-kms` as a dependency.
@@ -245,7 +245,7 @@ After installing, your `package.json` will reference the local tarball:
 ```json
 {
   "dependencies": {
-    "@faizahmedfarooqui/secret-keystore": "file:./faizahmedfarooqui-secret-keystore-1.0.0.tgz"
+    "@faizahmed/secret-keystore": "file:./faizahmedfarooqui-secret-keystore-1.0.0.tgz"
   }
 }
 ```
@@ -283,13 +283,13 @@ mv faizahmedfarooqui-secret-keystore-*.tgz ../your-consumer-project/
 cd ../your-consumer-project
 
 # Update package.json to reference the tarball
-# "dependencies": { "@faizahmedfarooqui/secret-keystore": "file:./faizahmedfarooqui-secret-keystore-1.0.0.tgz" }
+# "dependencies": { "@faizahmed/secret-keystore": "file:./faizahmedfarooqui-secret-keystore-1.0.0.tgz" }
 
 npm install       # or: pnpm install
 
 # 3. Commit the tarball to your repo (for CI/CD)
 git add faizahmedfarooqui-secret-keystore-*.tgz
-git commit -m "Add @faizahmedfarooqui/secret-keystore tarball for Docker builds"
+git commit -m "Add @faizahmed/secret-keystore tarball for Docker builds"
 ```
 
 ### Optional: YAML Support
@@ -333,16 +333,16 @@ Run the CLI to encrypt secrets:
 
 ```bash
 # Encrypt specific keys (kms-key-id is REQUIRED)
-npx @faizahmedfarooqui/secret-keystore encrypt \
+npx @faizahmed/secret-keystore encrypt \
   --kms-key-id="arn:aws:kms:us-east-1:123456789012:key/abcd-1234" \
   --keys="DB_PASSWORD,API_KEY,JWT_SECRET"
 
 # Or encrypt all keys (except reserved ones)
-npx @faizahmedfarooqui/secret-keystore encrypt \
+npx @faizahmed/secret-keystore encrypt \
   --kms-key-id="alias/my-key"
 
 # For local development, use explicit credentials
-npx @faizahmedfarooqui/secret-keystore encrypt \
+npx @faizahmed/secret-keystore encrypt \
   --kms-key-id="alias/my-key" \
   --use-credentials
 ```
@@ -363,7 +363,7 @@ JWT_SECRET=ENC[AQICAHh2nZPq...base64...]
 ### Step 3: Use in Your Application
 
 ```javascript
-const { createSecretKeyStore } = require('@faizahmedfarooqui/secret-keystore');
+const { createSecretKeyStore } = require('@faizahmed/secret-keystore');
 const fs = require('node:fs');
 
 async function bootstrap() {
@@ -398,7 +398,7 @@ bootstrap();
 ## CLI Reference
 
 ```bash
-npx @faizahmedfarooqui/secret-keystore <encrypt|decrypt> [options]
+npx @faizahmed/secret-keystore <encrypt|decrypt> [options]
 ```
 
 ### Commands
@@ -447,7 +447,7 @@ export AWS_ACCESS_KEY_ID=your-access-key
 export AWS_SECRET_ACCESS_KEY=your-secret-key
 
 # Run with --use-credentials flag
-npx @faizahmedfarooqui/secret-keystore encrypt \
+npx @faizahmed/secret-keystore encrypt \
   --kms-key-id="alias/my-key" \
   --use-credentials
 ```
@@ -466,61 +466,61 @@ These keys are **never encrypted** (required for encryption/decryption process):
 
 ```bash
 # Encrypt all keys in .env
-npx @faizahmedfarooqui/secret-keystore encrypt \
+npx @faizahmed/secret-keystore encrypt \
   --kms-key-id="alias/my-key"
 
 # Encrypt specific keys only
-npx @faizahmedfarooqui/secret-keystore encrypt \
+npx @faizahmed/secret-keystore encrypt \
   --kms-key-id="arn:aws:kms:us-east-1:123456789:key/abc-123" \
   --keys="DB_PASSWORD,API_KEY"
 
 # Encrypt YAML file with patterns
-npx @faizahmedfarooqui/secret-keystore encrypt \
+npx @faizahmed/secret-keystore encrypt \
   --path="./secrets.yaml" \
   --kms-key-id="alias/my-key" \
   --patterns="**.password,**.secret_key"
 
 # Dry run to preview changes
-npx @faizahmedfarooqui/secret-keystore encrypt \
+npx @faizahmed/secret-keystore encrypt \
   --kms-key-id="alias/my-key" \
   --dry-run
 
 # Output to a different file
-npx @faizahmedfarooqui/secret-keystore encrypt \
+npx @faizahmed/secret-keystore encrypt \
   --path="./.env" \
   --output="./.env.encrypted" \
   --kms-key-id="alias/my-key"
 
 # Decrypt all encrypted values in place
-npx @faizahmedfarooqui/secret-keystore decrypt \
+npx @faizahmed/secret-keystore decrypt \
   --path="./.env" \
   --kms-key-id="alias/my-key"
 
 # Decrypt to a separate plaintext file
-npx @faizahmedfarooqui/secret-keystore decrypt \
+npx @faizahmed/secret-keystore decrypt \
   --path="./.env.encrypted" \
   --output="./.env" \
   --kms-key-id="alias/my-key"
 
 # Run your app with secrets injected into its environment (no plaintext on disk)
-npx @faizahmedfarooqui/secret-keystore run \
+npx @faizahmed/secret-keystore run \
   --kms-key-id="alias/my-key" -- node server.js
 
 # Rotate a file from an old key to a new key (re-encrypts only encrypted values)
-npx @faizahmedfarooqui/secret-keystore rotate \
+npx @faizahmed/secret-keystore rotate \
   --old-kms-key-id="alias/old-key" \
   --kms-key-id="alias/new-key"
 
 # Edit an encrypted file in your $EDITOR (re-encrypts on save)
-npx @faizahmedfarooqui/secret-keystore edit \
+npx @faizahmed/secret-keystore edit \
   --kms-key-id="alias/my-key" --path="./.env"
 
 # Inspect a file without revealing any values
-npx @faizahmedfarooqui/secret-keystore status --path="./.env"
-npx @faizahmedfarooqui/secret-keystore keys   --path="./.env"
+npx @faizahmed/secret-keystore status --path="./.env"
+npx @faizahmed/secret-keystore keys   --path="./.env"
 
 # Migrate an existing plaintext .env to encrypted, in place
-npx @faizahmedfarooqui/secret-keystore import \
+npx @faizahmed/secret-keystore import \
   --kms-key-id="alias/my-key" --path="./.env"
 ```
 
@@ -533,7 +533,7 @@ npx @faizahmedfarooqui/secret-keystore import \
 ### Single Value Operations
 
 ```javascript
-const { encryptKMSValue, decryptKMSValue } = require('@faizahmedfarooqui/secret-keystore');
+const { encryptKMSValue, decryptKMSValue } = require('@faizahmed/secret-keystore');
 
 // Encrypt a single value
 const ciphertext = await encryptKMSValue(
@@ -555,7 +555,7 @@ const plaintext = await decryptKMSValue(
 ### Multiple Values Operations
 
 ```javascript
-const { encryptKMSValues, decryptKMSValues } = require('@faizahmedfarooqui/secret-keystore');
+const { encryptKMSValues, decryptKMSValues } = require('@faizahmed/secret-keystore');
 
 // Encrypt multiple values
 const result = await encryptKMSValues(
@@ -579,7 +579,7 @@ const {
   decryptKMSEnvContent,
   decryptKMSJsonContent,
   decryptKMSYamlContent
-} = require('@faizahmedfarooqui/secret-keystore');
+} = require('@faizahmed/secret-keystore');
 const fs = require('node:fs');
 
 // Encrypt ENV content
@@ -606,7 +606,7 @@ const yamlResult = await encryptKMSYamlContent(yamlContent, kmsKeyId, {
 For advanced use cases where you handle parsing/serialization:
 
 ```javascript
-const { encryptKMSObject, decryptKMSObject } = require('@faizahmedfarooqui/secret-keystore');
+const { encryptKMSObject, decryptKMSObject } = require('@faizahmed/secret-keystore');
 const yaml = require('js-yaml');
 const fs = require('node:fs');
 
@@ -658,7 +658,7 @@ files, decrypts the `ENC[...]` values via KMS, and loads everything into an in-m
 [`SecretKeyStore`](#createsecretkeystoresource-kmskeyid-options) — in a single call.
 
 ```javascript
-const { config } = require('@faizahmedfarooqui/secret-keystore');
+const { config } = require('@faizahmed/secret-keystore');
 
 // Discovers .env, .env.local, .env.<NODE_ENV>, .env.<NODE_ENV>.local (later wins)
 const secrets = await config({ kmsKeyId: 'alias/my-key' });
@@ -701,7 +701,7 @@ process.on('SIGTERM', () => secrets.destroy());
 Creates and initializes a secure in-memory keystore with decrypted secrets. Use this directly when you already have the file content/object in hand; use [`config()`](#zero-config-loader-config) when you want automatic file discovery and cascading.
 
 ```javascript
-const { createSecretKeyStore } = require('@faizahmedfarooqui/secret-keystore');
+const { createSecretKeyStore } = require('@faizahmed/secret-keystore');
 const fs = require('node:fs');
 
 const content = fs.readFileSync('./.env', 'utf-8');
@@ -964,7 +964,7 @@ sequenceDiagram
 ### Enabling Attestation
 
 ```javascript
-const { createSecretKeyStore } = require('@faizahmedfarooqui/secret-keystore');
+const { createSecretKeyStore } = require('@faizahmed/secret-keystore');
 
 const keyStore = await createSecretKeyStore(
   { type: 'env', content },
@@ -986,7 +986,7 @@ const keyStore = await createSecretKeyStore(
 For advanced use cases, you can use the `AttestationManager` directly:
 
 ```javascript
-const { createAttestationManager } = require('@faizahmedfarooqui/secret-keystore');
+const { createAttestationManager } = require('@faizahmed/secret-keystore');
 const { KMSClient } = require('@aws-sdk/client-kms');
 
 // Create and initialize the manager
@@ -1042,7 +1042,7 @@ const {
   DecryptionError,        // Decryption failures
   KeystoreError,          // Keystore operation errors
   ValidationError         // Validation failures
-} = require('@faizahmedfarooqui/secret-keystore');
+} = require('@faizahmed/secret-keystore');
 
 try {
   const keyStore = await createSecretKeyStore(source, kmsKeyId, options);
@@ -1083,7 +1083,7 @@ import {
   // Attestation exports
   AttestationManager,
   createAttestationManager
-} from '@faizahmedfarooqui/secret-keystore';
+} from '@faizahmed/secret-keystore';
 
 const source: KeystoreSource = {
   type: 'env',
@@ -1112,7 +1112,7 @@ const password: string | undefined = keyStore.get('DB_PASSWORD');
 The `--kms-key-id` option is required for all CLI operations. Provide your KMS key:
 
 ```bash
-npx @faizahmedfarooqui/secret-keystore encrypt --kms-key-id="your-kms-key-id"
+npx @faizahmed/secret-keystore encrypt --kms-key-id="your-kms-key-id"
 ```
 
 ### "Could not load credentials"

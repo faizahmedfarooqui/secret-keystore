@@ -1,5 +1,5 @@
 /**
- * @faizahmedfarooqui/secret-keystore - Runtime Keystore
+ * @faizahmed/secret-keystore - Runtime Keystore
  *
  * Secure in-memory storage for decrypted secrets with:
  * - Multiple source types (env, json, yaml, object, values)

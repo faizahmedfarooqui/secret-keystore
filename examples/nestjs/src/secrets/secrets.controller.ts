@@ -1,5 +1,5 @@
 import { Controller, Get, Param, Inject } from '@nestjs/common';
-import { SecretKeyStore } from '@faizahmedfarooqui/secret-keystore';
+import { SecretKeyStore } from '@faizahmed/secret-keystore';
 import { KEYSTORE_TOKEN } from '../keystore/keystore.module';
 
 @Controller('secrets')

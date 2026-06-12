@@ -1,5 +1,5 @@
 /**
- * @faizahmedfarooqui/secret-keystore - Content-Based Operations
+ * @faizahmed/secret-keystore - Content-Based Operations
  *
  * Functions for encrypting/decrypting content strings (ENV, JSON, YAML).
  * Preserves comments and formatting during transformation.

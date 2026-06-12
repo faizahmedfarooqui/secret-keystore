@@ -1,6 +1,6 @@
 # Next.js Secret Keystore Example
 
-A complete Next.js 14 (App Router) application demonstrating `@faizahmedfarooqui/secret-keystore` integration with the new content-based API.
+A complete Next.js 14 (App Router) application demonstrating `@faizahmed/secret-keystore` integration with the new content-based API.
 
 ## Prerequisites
 
@@ -117,7 +117,7 @@ nextjs/
 The keystore now uses a content-based API:
 
 ```typescript
-import { createSecretKeyStore } from '@faizahmedfarooqui/secret-keystore';
+import { createSecretKeyStore } from '@faizahmed/secret-keystore';
 import * as fs from 'node:fs';
 import * as path from 'node:path';
 

@@ -1,5 +1,5 @@
 /**
- * @faizahmedfarooqui/secret-keystore - TypeScript Definitions
+ * @faizahmed/secret-keystore - TypeScript Definitions
  *
  * Version 4.0
  */

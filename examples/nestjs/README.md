@@ -1,6 +1,6 @@
 # NestJS Secret Keystore Example
 
-A complete NestJS application demonstrating `@faizahmedfarooqui/secret-keystore` integration with the new content-based API.
+A complete NestJS application demonstrating `@faizahmed/secret-keystore` integration with the new content-based API.
 
 ## Prerequisites
 
@@ -125,7 +125,7 @@ nestjs/
 The keystore now uses a content-based API:
 
 ```typescript
-import { createSecretKeyStore } from '@faizahmedfarooqui/secret-keystore';
+import { createSecretKeyStore } from '@faizahmed/secret-keystore';
 import * as fs from 'node:fs';
 import * as path from 'node:path';
 

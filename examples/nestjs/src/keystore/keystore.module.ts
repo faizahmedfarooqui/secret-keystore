@@ -1,7 +1,7 @@
 import * as fs from 'node:fs';
 import * as path from 'node:path';
 import { Module, Global, Logger } from '@nestjs/common';
-import { createSecretKeyStore, SecretKeyStore } from '@faizahmedfarooqui/secret-keystore';
+import { createSecretKeyStore, SecretKeyStore } from '@faizahmed/secret-keystore';
 
 export const KEYSTORE_TOKEN = 'SECRET_KEYSTORE';
 

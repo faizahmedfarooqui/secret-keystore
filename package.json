@@ -1,11 +1,11 @@
 {
-    "name": "@faizahmedfarooqui/secret-keystore",
+    "name": "@faizahmed/secret-keystore",
     "version": "1.1.0",
     "description": "Secure secrets management with AWS KMS encryption, in-memory keystore, and Nitro Enclave attestation support",
     "main": "src/index.js",
     "types": "src/index.d.ts",
     "bin": {
-        "secret-keystore": "./bin/cli.js"
+        "secret-keystore": "bin/cli.js"
     },
     "engines": {
         "node": ">=18.0.0"

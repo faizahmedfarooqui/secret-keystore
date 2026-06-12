@@ -1,5 +1,5 @@
 /**
- * @faizahmedfarooqui/secret-keystore - Runtime config loader
+ * @faizahmed/secret-keystore - Runtime config loader
  *
  * Zero-config loader that discovers and cascades .env files, decrypts their
  * KMS-encrypted (ENC[...]) values, and loads everything into an in-memory

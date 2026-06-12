@@ -1,5 +1,5 @@
 /**
- * @faizahmedfarooqui/secret-keystore - Options Architecture
+ * @faizahmed/secret-keystore - Options Architecture
  *
  * Layered/namespaced options structure for all library functions.
  * This module provides type definitions, defaults, and validation.

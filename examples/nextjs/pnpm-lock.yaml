@@ -8,7 +8,7 @@ importers:
 
   .:
     dependencies:
-      '@faizahmedfarooqui/secret-keystore':
+      '@faizahmed/secret-keystore':
         specifier: file:../../
         version: file:../..(@aws-sdk/client-kms@3.1067.0)
       next:
@@ -121,7 +121,7 @@ packages:
     resolution: {integrity: sha512-iY8yvjE0y651BixKNPgmv1WrQc+GZ142sb0z4gYnChDDY2YqI4P/jsSopBWrKfAt7LOJAkOXt7rC/hms+WclQQ==}
     engines: {node: '>=18.0.0'}
 
-  '@faizahmedfarooqui/secret-keystore@file:../..':
+  '@faizahmed/secret-keystore@file:../..':
     resolution: {directory: ../.., type: directory}
     engines: {node: '>=18.0.0'}
     hasBin: true
@@ -580,7 +580,7 @@ snapshots:
 
   '@aws/lambda-invoke-store@0.2.4': {}
 
-  '@faizahmedfarooqui/secret-keystore@file:../..(@aws-sdk/client-kms@3.1067.0)':
+  '@faizahmed/secret-keystore@file:../..(@aws-sdk/client-kms@3.1067.0)':
     dependencies:
       '@aws-sdk/client-kms': 3.1067.0
       asn1js: 3.0.10

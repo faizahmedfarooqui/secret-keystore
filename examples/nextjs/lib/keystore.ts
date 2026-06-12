@@ -7,7 +7,7 @@
  * - Server Actions
  */
 
-import { createSecretKeyStore, SecretKeyStore } from '@faizahmedfarooqui/secret-keystore';
+import { createSecretKeyStore, SecretKeyStore } from '@faizahmed/secret-keystore';
 import * as fs from 'node:fs';
 import * as path from 'node:path';
 

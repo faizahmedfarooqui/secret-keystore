@@ -6,7 +6,7 @@ const nextConfig = {
 
   // Ensure server components can use the keystore
   // Note: In Next.js 14+, use serverExternalPackages instead of experimental.serverComponentsExternalPackages
-  serverExternalPackages: ['@faizahmedfarooqui/secret-keystore'],
+  serverExternalPackages: ['@faizahmed/secret-keystore'],
 };
 
 module.exports = nextConfig;

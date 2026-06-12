@@ -1,5 +1,5 @@
 /**
- * @faizahmedfarooqui/secret-keystore - Ephemeral Key Pair Generation
+ * @faizahmed/secret-keystore - Ephemeral Key Pair Generation
  *
  * Generates RSA-4096 key pairs for attestation document requests.
  * The public key is embedded in the attestation document, and the

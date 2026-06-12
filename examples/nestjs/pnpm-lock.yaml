@@ -8,7 +8,7 @@ importers:
 
   .:
     dependencies:
-      '@faizahmedfarooqui/secret-keystore':
+      '@faizahmed/secret-keystore':
         specifier: file:../../
         version: file:../..(@aws-sdk/client-kms@3.1067.0)(js-yaml@4.2.0)
       '@nestjs/common':
@@ -160,7 +160,7 @@ packages:
     resolution: {integrity: sha512-ooWCrlZP11i8GImSjTHYHLkvFDP48nS4+204nGb1RiX/WXYHmJA2III9/e2DWVabCESdW7hBAEzHRqUn9OUVvQ==}
     engines: {node: '>=0.1.90'}
 
-  '@faizahmedfarooqui/secret-keystore@file:../..':
+  '@faizahmed/secret-keystore@file:../..':
     resolution: {directory: ../.., type: directory}
     engines: {node: '>=18.0.0'}
     hasBin: true
@@ -1854,7 +1854,7 @@ snapshots:
   '@colors/colors@1.5.0':
     optional: true
 
-  '@faizahmedfarooqui/secret-keystore@file:../..(@aws-sdk/client-kms@3.1067.0)(js-yaml@4.2.0)':
+  '@faizahmed/secret-keystore@file:../..(@aws-sdk/client-kms@3.1067.0)(js-yaml@4.2.0)':
     dependencies:
       '@aws-sdk/client-kms': 3.1067.0
       asn1js: 3.0.10

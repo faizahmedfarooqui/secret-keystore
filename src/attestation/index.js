@@ -1,5 +1,5 @@
 /**
- * @faizahmedfarooqui/secret-keystore - Attestation Module
+ * @faizahmed/secret-keystore - Attestation Module
  *
  * Complete AWS Nitro Enclave attestation support including:
  * - Ephemeral RSA key pair generation
